@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SkereBiertjes.Beer">
+    <Position X="1" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEBAAAAAAAAAAAAABAAADAAEAAQgAABoAgAAAICAAA=</HashCode>
+      <FileName>Beer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkereBiertjes.BeerScraper">
+    <Position X="6" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAIAABAAAAAQEAAAABAAAAAACAIAAAAAAA=</HashCode>
+      <FileName>BeerScraper.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Scraper" />
+      <Property Name="DatabaseHandler" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SkereBiertjes.DatabaseHandler">
+    <Position X="5.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAQAAAAAAAAABAAEAAAAAAAA=</HashCode>
+      <FileName>DatabaseHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkereBiertjes.GUI">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAADAAIAAQAAAAAAAAAAAACABAAAAAAA=</HashCode>
+      <FileName>GUI.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="BeerScraper" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SkereBiertjes.JumboScraper">
+    <Position X="1" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEgAAAAAAAAAAAAAEAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>JumboScraper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SkereBiertjes.AHScraper">
+    <Position X="2.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEgAAAAAAAAAAAAAEAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>AHScraper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SkereBiertjes.GallEnGallScraper">
+    <Position X="4.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEgAAAAAAAAAAAAAEAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>GallEnGallScraper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SkereBiertjes.CoopScraper">
+    <Position X="6.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEgAAAAAAAAAAAAAEAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>CoopScraper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SkereBiertjes.PLUSScraper">
+    <Position X="8" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEgAAAAAAAAAAAAAEAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>PLUSScraper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="SkereBiertjes.Scraper">
+    <Position X="3.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAEIAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Scraper.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Beer" />
+    </ShowAsAssociation>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
