@@ -13,7 +13,7 @@ namespace SkereBiertjes
         private string shop;
         private int priceNormalized;
         private string discount;
-        private string image;
+        private string url;
 
         public string getBrand()
         {
@@ -45,9 +45,10 @@ namespace SkereBiertjes
             throw new System.NotImplementedException();
         }
 
-        public string getImage()
+        public string getUrl()
         {
             throw new System.NotImplementedException();
         }
+        
     }
 }

@@ -18,14 +18,6 @@ namespace SkereBiertjes
             }
         }
 
-        public DatabaseHandler DatabaseHandler
-        {
-            get => default(DatabaseHandler);
-            set
-            {
-            }
-        }
-
         public Scraper[] getScrapers()
         {
             throw new System.NotImplementedException();

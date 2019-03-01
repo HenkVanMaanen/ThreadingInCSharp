@@ -32,7 +32,7 @@ namespace SkereBiertjes
             throw new System.NotImplementedException();
         }
 
-        private filter[] setFilters()
+        private string[] setFilters()
         {
             throw new System.NotImplementedException();
         }
