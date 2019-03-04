@@ -9,12 +9,9 @@ namespace SkereBiertjes
     {
         private BeerScraper beerScraper;
 
-        public BeerScraper BeerScraper
+        public GUI()
         {
-            get => default(BeerScraper);
-            set
-            {
-            }
+            this.beerScraper = new BeerScraper();
         }
 
         private void search(System.String keyword)

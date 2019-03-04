@@ -31,11 +31,10 @@ namespace SkereBiertjes
                                         "beers (" +
                                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                             "brand NVARCHAR(50) NOT NULL," +
-                                            "price int NOT NULL," +
-                                            "volume int NOT NULL" +
-                                            "priceNormalized int NOT NULL" +
-                                            "discount string DEFAULT NULL" +
-                                            "shop string NOT NULL" +
+                                            "volume int NOT NULL," +
+                                            "priceNormalized int NOT NULL," +
+                                            "discount string DEFAULT NULL," +
+                                            "shop string NOT NULL," +
                                             "url string DEFAULT NULL" +
                                         "); ";
 
@@ -48,12 +47,12 @@ namespace SkereBiertjes
 
         }
 
-        public bool store(Beer[] Beers)
+        public bool store(List<Beer> Beers)
         {
-
+           
             try
             {
-                StringBuilder sCommand = new StringBuilder("INSERT INTO beers (brand, price, volume, priceNormalized, discount, shop, url) VALUES ");
+                StringBuilder sCommand = new StringBuilder("INSERT INTO beers (brand, volume, priceNormalized, discount, shop, url) VALUES ");
 
                 using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
                 {
@@ -61,22 +60,21 @@ namespace SkereBiertjes
 
                     foreach (Beer beer in Beers)
                     {
-                        Rows.Add(string.Format("('{0}', '{1}'), '{2}'), '{3}'), '{4}'), '{5}'), '{6}')",
+                        Rows.Add(string.Format("('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')",
                             MySqlHelper.EscapeString(beer.getBrand()),
-                            MySqlHelper.EscapeString(beer.getPrice().ToString()),
                             MySqlHelper.EscapeString(beer.getVolume().ToString()),
                             MySqlHelper.EscapeString(beer.getNormalizedPrice().ToString()),
                             MySqlHelper.EscapeString(beer.getDiscount()),
                             MySqlHelper.EscapeString(beer.getShopName()),
-                            MySqlHelper.EscapeString(beer.getUrl())));
+                            MySqlHelper.EscapeString(beer.getUrl()))
+                        );
                     }
                     sCommand.Append(string.Join(",", Rows));
                     sCommand.Append(";");
 
 
                     db.Open();
-
-                    SqliteCommand insertSql = new SqliteCommand(sCommand.ToString());
+                    SqliteCommand insertSql = new SqliteCommand(sCommand.ToString(), db);
                     insertSql.ExecuteReader();
                    
                     db.Close();
@@ -93,6 +91,40 @@ namespace SkereBiertjes
         public void delete()
         {
 
+        }
+
+        public List<Beer> get()
+        {
+            List<Beer> beers = new List<Beer>();
+
+            using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
+            {
+                db.Open();
+
+                SqliteCommand selectCommand = new SqliteCommand("SELECT * from beers", db);
+
+                SqliteDataReader query = selectCommand.ExecuteReader();
+
+                int idx = 0;
+                while (query.Read())
+                {
+                    beers.Add(
+                        new Beer(
+                            query.GetString(1),
+                            query.GetInt32(2), 
+                            query.GetInt32(3), 
+                            query.GetString(4), 
+                            query.GetString(5), 
+                            query.GetString(6)
+                        )
+                    );
+                    idx++;
+                }
+                
+                db.Close();
+            }
+
+            return beers;
         }
     }
 }
