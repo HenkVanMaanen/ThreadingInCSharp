@@ -14,7 +14,10 @@ namespace SkereBiertjes
 
         public BeerScraper()
         {
+            //create the database handler
             this.databaseHandler = new DatabaseHandler("SkereBiertjesV1.db");
+
+            //create fake data
             List<Beer> beers = new List<Beer> {
                 new Beer("Grolsch", 330,  799, "", "Jumbo", "http://pils.com"),
                 new Beer("Grolsch", 330,  800, "", "Jumbo", "http://pils.com"),
@@ -167,7 +170,11 @@ namespace SkereBiertjes
                 new Beer("Grolsch", 330,  799, "", "Jumbo", "http://pils.com"),
                 new Beer("Grolsch", 330,  800, "", "Jumbo", "http://pils.com"),
             };
+
+            //add the fake data to the database.
             this.databaseHandler.store(beers);
+
+            //get all data from the database.
             this.beers = this.databaseHandler.get();
         }
 
