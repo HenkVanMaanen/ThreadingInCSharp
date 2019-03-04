@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
 using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
 
 namespace SkereBiertjes
 {
@@ -65,14 +61,14 @@ namespace SkereBiertjes
 
                     foreach (Beer beer in Beers)
                     {
-                        Rows.Add(string.Format("('{0}', '{1}'), '{2}'), '{3}'), '{4}'), '{5}'), '{6}')"),
+                        Rows.Add(string.Format("('{0}', '{1}'), '{2}'), '{3}'), '{4}'), '{5}'), '{6}')",
                             MySqlHelper.EscapeString(beer.getBrand()),
-                            MySqlHelper.EscapeString(beer.getPrice()),
-                            MySqlHelper.EscapeString(beer.getVolume()),
-                            MySqlHelper.EscapeString(beer.getNormalizedPrice()),
+                            MySqlHelper.EscapeString(beer.getPrice().ToString()),
+                            MySqlHelper.EscapeString(beer.getVolume().ToString()),
+                            MySqlHelper.EscapeString(beer.getNormalizedPrice().ToString()),
                             MySqlHelper.EscapeString(beer.getDiscount()),
                             MySqlHelper.EscapeString(beer.getShopName()),
-                            MySqlHelper.EscapeString(beer.getUrl()));
+                            MySqlHelper.EscapeString(beer.getUrl())));
                     }
                     sCommand.Append(string.Join(",", Rows));
                     sCommand.Append(";");
@@ -80,12 +76,9 @@ namespace SkereBiertjes
 
                     db.Open();
 
-                    using (MySqlCommand myCmd = new MySqlCommand(sCommand.ToString(), db))
-                    {
-                        myCmd.CommandType = CommandType.Text;
-                        myCmd.ExecuteNonQuery();
-                    }
-
+                    SqliteCommand insertSql = new SqliteCommand(sCommand.ToString());
+                    insertSql.ExecuteReader();
+                   
                     db.Close();
                 }
             }
