@@ -7,47 +7,51 @@ namespace SkereBiertjes
 {
     public class Beer
     {
-        private int brand;
-        private int price;
+        private string brand;
         private int volume;
         private string shop;
         private int priceNormalized;
         private string discount;
         private string url;
 
-        public string getBrand()
+        public Beer(string brand, int volume, int priceNormalized, string discount, string shop, string url)
         {
-            throw new System.NotImplementedException();
+            this.brand = brand;
+            this.volume = volume;
+            this.shop = shop;
+            this.priceNormalized = priceNormalized;
+            this.discount = discount;
+            this.url = url;
         }
 
-        public int getPrice()
+        public string getBrand()
         {
-            throw new System.NotImplementedException();
+            return this.brand;
         }
 
         public int getVolume()
         {
-            throw new System.NotImplementedException();
+            return this.volume;
         }
 
         public int getNormalizedPrice()
         {
-            throw new System.NotImplementedException();
+            return this.priceNormalized;
         }
 
         public string getDiscount()
         {
-            throw new System.NotImplementedException();
+            return this.discount;
         }
 
         public string getShopName()
         {
-            throw new System.NotImplementedException();
+            return this.shop;
         }
 
         public string getUrl()
         {
-            throw new System.NotImplementedException();
+            return this.url;
         }
         
     }
