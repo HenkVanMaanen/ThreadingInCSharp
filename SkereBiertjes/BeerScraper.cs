@@ -169,11 +169,6 @@ namespace SkereBiertjes
             };
             this.databaseHandler.store(beers);
             this.beers = this.databaseHandler.get();
-            Debug.WriteLine(this.beers.Count());
-            this.databaseHandler.delete();
-            this.databaseHandler.store(beers);
-            this.beers = this.databaseHandler.get();
-            Debug.WriteLine(this.beers.Count());
         }
 
         public Scraper Scraper
