@@ -46,6 +46,40 @@ namespace SkereBiertjes
             }
 
         }
+        
+        public List<Beer> get()
+        {
+            List<Beer> beers = new List<Beer>();
+
+            using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
+            {
+                db.Open();
+
+                SqliteCommand selectCommand = new SqliteCommand("SELECT * from beers", db);
+
+                SqliteDataReader query = selectCommand.ExecuteReader();
+
+                int idx = 0;
+                while (query.Read())
+                {
+                    beers.Add(
+                        new Beer(
+                            query.GetString(1),
+                            query.GetInt32(2),
+                            query.GetInt32(3),
+                            query.GetString(4),
+                            query.GetString(5),
+                            query.GetString(6)
+                        )
+                    );
+                    idx++;
+                }
+
+                db.Close();
+            }
+
+            return beers;
+        }
 
         public bool store(List<Beer> Beers)
         {
@@ -90,41 +124,23 @@ namespace SkereBiertjes
         
         public void delete()
         {
-
-        }
-
-        public List<Beer> get()
-        {
-            List<Beer> beers = new List<Beer>();
-
             using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
             {
-                db.Open();
+                SqliteCommand insertSql = new SqliteCommand("DELETE FROM beers", db);
 
-                SqliteCommand selectCommand = new SqliteCommand("SELECT * from beers", db);
-
-                SqliteDataReader query = selectCommand.ExecuteReader();
-
-                int idx = 0;
-                while (query.Read())
+                try
                 {
-                    beers.Add(
-                        new Beer(
-                            query.GetString(1),
-                            query.GetInt32(2), 
-                            query.GetInt32(3), 
-                            query.GetString(4), 
-                            query.GetString(5), 
-                            query.GetString(6)
-                        )
-                    );
-                    idx++;
-                }
-                
-                db.Close();
-            }
+                    db.Open();
 
-            return beers;
+                    insertSql.ExecuteReader();
+
+                    db.Close();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+            }
         }
     }
 }
