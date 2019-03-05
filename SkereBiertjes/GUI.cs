@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SkereBiertjes
 {
@@ -12,6 +14,13 @@ namespace SkereBiertjes
         public GUI()
         {
             this.beerScraper = new BeerScraper();
+            Task T1 = new Task(() => beerScraper.start());
+            T1.Start();
+
+            Debug.WriteLine("Beerscraper started");
+
+            T1.Wait();
+            Debug.WriteLine("Beerscraper done");
         }
 
         private void search(System.String keyword)

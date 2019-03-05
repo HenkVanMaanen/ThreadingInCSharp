@@ -171,6 +171,11 @@ namespace SkereBiertjes
                 new Beer("Grolsch", 330,  800, "", "Jumbo", "http://pils.com"),
             };
 
+            
+        }
+
+        public void start()
+        {
             //add the fake data to the database.
             //this.databaseHandler.store(beers);
 
@@ -179,17 +184,9 @@ namespace SkereBiertjes
             Scraper scraper2 = new GallEnGallScraper();
             scraper2.getHTML();
 
-            foreach(Scraper scraper in this.scrapers)
+            foreach (Scraper scraper in this.scrapers)
             {
                 scraper.getHTML();
-            }
-        }
-
-        public Scraper Scraper
-        {
-            get => default(Scraper);
-            set
-            {
             }
         }
 

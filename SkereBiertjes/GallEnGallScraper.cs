@@ -16,7 +16,9 @@ namespace SkereBiertjes
         public GallEnGallScraper()
         {
             beers = new List<Beer>();
-            StandardURL = "C:/Users/chiel/Persoonlijk/SCHOOL TI STENDEN/Technische informatica jaar 3/Periode 3/C# multithreading/C# multithreading/Documenten/Test data/gall&gall.html";
+            string StartURL = "D:/Drives";
+            //string StartURL = "C:/Users/chiel/Persoonlijk";
+            StandardURL = StartURL + "/SCHOOL TI STENDEN/Technische informatica jaar 3/Periode 3/C# multithreading/C# multithreading/Documenten/Test data/gall&gall.html";
         }
 
         string Scraper.getHTML()
