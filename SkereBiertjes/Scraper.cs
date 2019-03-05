@@ -7,10 +7,10 @@ namespace SkereBiertjes
 {
     public interface Scraper
     {
-        Beer Beer { get; set; }
+        List<Beer> getBeers();
 
-        Beer[] getBeers();
         string getHTML();
-        Beer[] parseHTML();
+
+        List<Beer> parseHTML();
     }
 }

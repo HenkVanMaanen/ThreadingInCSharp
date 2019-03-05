@@ -9,16 +9,17 @@ namespace SkereBiertjes
     {
         public string StandardURL;
 
-        public Beer Beer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public abstract Beer[] getBeers();
+        public List<Beer> getBeers()
+        {
+            throw new NotImplementedException();
+        }
 
         string Scraper.getHTML()
         {
             throw new NotImplementedException();
         }
 
-        Beer[] Scraper.parseHTML()
+        List<Beer> Scraper.parseHTML()
         {
             throw new NotImplementedException();
         }

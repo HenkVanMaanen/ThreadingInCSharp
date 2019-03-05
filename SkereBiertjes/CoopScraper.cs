@@ -2,23 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HtmlAgilityPack;
 
 namespace SkereBiertjes
 {
     public abstract class CoopScraper : Scraper
     {
         public string StandardURL;
-
-        public Beer Beer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public abstract Beer[] getBeers();
-
-        string Scraper.getHTML()
+        
+        List<Beer> Scraper.getBeers()
         {
             throw new NotImplementedException();
         }
 
-        Beer[] Scraper.parseHTML()
+        string Scraper.getHTML()
+        {
+
+
+            return null;
+        }
+
+        List<Beer> Scraper.parseHTML()
         {
             throw new NotImplementedException();
         }

@@ -172,10 +172,17 @@ namespace SkereBiertjes
             };
 
             //add the fake data to the database.
-            this.databaseHandler.store(beers);
+            //this.databaseHandler.store(beers);
 
             //get all data from the database.
-            this.beers = this.databaseHandler.get();
+            //this.beers = this.databaseHandler.get();
+            Scraper scraper2 = new GallEnGallScraper();
+            scraper2.getHTML();
+
+            foreach(Scraper scraper in this.scrapers)
+            {
+                scraper.getHTML();
+            }
         }
 
         public Scraper Scraper

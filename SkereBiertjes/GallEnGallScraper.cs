@@ -2,25 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HtmlAgilityPack;
+using System.Diagnostics;
 
 namespace SkereBiertjes
 {
-    public abstract class GallEnGallScraper : Scraper
+    public class GallEnGallScraper : Scraper
     {
         public string StandardURL;
 
-        public Beer Beer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private List<Beer> beers;
 
-        public abstract Beer[] getBeers();
+        public GallEnGallScraper()
+        {
+            beers = new List<Beer>();
+            StandardURL = "C:/Users/chiel/Persoonlijk/SCHOOL TI STENDEN/Technische informatica jaar 3/Periode 3/C# multithreading/C# multithreading/Documenten/Test data/gall&gall.html";
+        }
 
         string Scraper.getHTML()
+        {
+            var doc = new HtmlDocument();
+            doc.Load(StandardURL);
+
+            var node = doc.DocumentNode.SelectSingleNode("//body");
+
+            Debug.WriteLine(node);
+            return null;
+        }
+
+        List<Beer> Scraper.parseHTML()
         {
             throw new NotImplementedException();
         }
 
-        Beer[] Scraper.parseHTML()
+        public List<Beer> getBeers()
         {
-            throw new NotImplementedException();
+            return beers;
         }
     }
 }
