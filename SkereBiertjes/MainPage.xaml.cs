@@ -22,12 +22,10 @@ namespace SkereBiertjes
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private GUI GUI;
     
         public MainPage()
         {
             this.InitializeComponent();
-            this.GUI = new GUI();
         }
     }
 }
