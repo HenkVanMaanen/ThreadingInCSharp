@@ -14,14 +14,19 @@
                 <NavigationViewItem Icon="Zoom" Content="Bier zoeken" Tag="home"/>
             </NavigationView.MenuItems>
 
-            <Frame x:Name="ContentFrame">
-                <Frame.ContentTransitions>
-                    <TransitionCollection>
-                        <NavigationThemeTransition></NavigationThemeTransition>
-                    </TransitionCollection>
-                </Frame.ContentTransitions>
-            </Frame>
-            
+            <Grid Background="#FFF9F9F9">
+                <Image HorizontalAlignment="Stretch" Height="241" Margin="0,0,0,0" VerticalAlignment="Top" Source="headerimg.jpg" Stretch="UniformToFill"/>
+                <Grid HorizontalAlignment="Center" Margin="0,100,0,0" Width="464" Background="White" VerticalAlignment="Stretch">
+                    <Frame x:Name="ContentFrame">
+                        <Frame.ContentTransitions>
+                            <TransitionCollection>
+                                <NavigationThemeTransition></NavigationThemeTransition>
+                            </TransitionCollection>
+                        </Frame.ContentTransitions>
+                    </Frame>
+                </Grid>
+            </Grid>
+
         </NavigationView>
 
     </Grid>

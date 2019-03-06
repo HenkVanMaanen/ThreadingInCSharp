@@ -6,10 +6,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Custom="using:Microsoft.UI.Xaml.Controls"
     x:Class="SkereBiertjes.MainPage"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d">
 
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="733,499,0,0" Text="Home page" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <Rectangle Height="77" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Fill="#FFF8F8F8"/>
     </Grid>
 </Page>

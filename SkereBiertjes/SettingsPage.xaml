@@ -5,10 +5,11 @@
     xmlns:local="using:SkereBiertjes"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d">
 
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="865,676,0,0" Text="Settings page" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <Rectangle Height="50" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Fill="#FFF8F8F8"/>
+        <TextBlock HorizontalAlignment="Left" Margin="25,16,0,0" Text="Instellingen" TextWrapping="Wrap" VerticalAlignment="Top" Canvas.ZIndex="1" FontSize="14"/>
     </Grid>
+
 </Page>
