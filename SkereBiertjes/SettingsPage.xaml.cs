@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace SkereBiertjes
@@ -14,7 +15,29 @@ namespace SkereBiertjes
             this.InitializeComponent();
         }
 
-        private void Button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        // Benchmark start button clicked
+        private void BenchmarkStart_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        // Multithreading toggled
+        private void Multithreading_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleSwitch toggleSwitch)
+            {
+                if (toggleSwitch.IsOn == true)
+                {
+                    // Turn multithreading ON
+                }
+                else
+                {
+                    // Turn multithreading OFF
+                }
+            }
+        }
+
+        private void TextBlock_SelectionChanged(object sender, RoutedEventArgs e)
         {
 
         }
