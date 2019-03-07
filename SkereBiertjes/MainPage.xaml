@@ -6,17 +6,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Custom="using:Microsoft.UI.Xaml.Controls"
     x:Class="SkereBiertjes.MainPage"
-    mc:Ignorable="d" Width="548">
+    mc:Ignorable="d">
 
     <Grid Background="White">
-        <Rectangle Height="80" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Fill="#FFF8F8F8"/>
-        <!--<Grid Height="100" Margin="20,100,20,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="508">
-            <SearchBox x:Name="beerSearchBox" 
-            FocusOnKeyboardInput="True"
-            QuerySubmitted="beerSearchBox_QuerySubmitted"
-            Height="35" Margin="0,0,0,0" VerticalAlignment="Top"
+        <Rectangle Height="85" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Fill="#FFF8F8F8"/>
+        <AutoSuggestBox x:Name="beerSearchBox" 
+            QueryIcon="Find"
+            TextChanged="BeerSearchBox_TextChanged"
+            QuerySubmitted="BeerSearchBox_QuerySubmitted"
+            SuggestionChosen="BeerSearchBox_SuggestionChosen"
+            Height="35" Margin="25,25,25,25" VerticalAlignment="Top"
             HorizontalAlignment="Stretch"
             PlaceholderText="Begin de zoektocht naar bier..."/>
-        </Grid>-->
     </Grid>
 </Page>

@@ -18,7 +18,8 @@ using Windows.UI.Xaml.Navigation;
 namespace SkereBiertjes
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// The main page of the app. Users can use the searchbar to find their prefered beers,
+    /// to see what beers have a discount and what the other prices are from low to high.
     /// </summary>
     public sealed partial class MainPage : Page
     {
@@ -28,9 +29,35 @@ namespace SkereBiertjes
             this.InitializeComponent();
         }
 
-        private void beerSearchBox_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
+        private void BeerSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            //this.Frame.Navigate(typeof(SearchResultsPage1), args.QueryText);
+            // Only get results when it was a user typing, 
+            // otherwise assume the value got filled in by TextMemberPath 
+            // or the handler for SuggestionChosen.
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                //Set the ItemsSource to be your filtered dataset
+                //sender.ItemsSource = dataset;
+            }
+        }
+
+
+        private void BeerSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            // Set sender.Text. You can use args.SelectedItem to build your text string.
+        }
+
+
+        private void BeerSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (args.ChosenSuggestion != null)
+            {
+                // User selected an item from the suggestion list, take an action on it here.
+            }
+            else
+            {
+                // Use args.QueryText to determine what to do.
+            }
         }
     }
 }
