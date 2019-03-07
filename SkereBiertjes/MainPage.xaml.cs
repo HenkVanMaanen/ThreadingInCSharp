@@ -27,5 +27,10 @@ namespace SkereBiertjes
         {
             this.InitializeComponent();
         }
+
+        private void beerSearchBox_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
+        {
+            //this.Frame.Navigate(typeof(SearchResultsPage1), args.QueryText);
+        }
     }
 }

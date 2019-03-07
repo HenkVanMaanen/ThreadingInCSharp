@@ -59,6 +59,9 @@ namespace SkereBiertjes
                     case "home":
                         ContentFrame.Navigate(typeof(MainPage));
                         break;
+                    case "filters":
+                        ContentFrame.Navigate(typeof(FilterPage));
+                        break;
                     default:
                         ContentFrame.Navigate(typeof(MainPage));
                         break;
