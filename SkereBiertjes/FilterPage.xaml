@@ -42,8 +42,8 @@
             </ComboBox>
             <Border Grid.Row="5" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
             <Button Grid.Row="6" Margin="0,25,0,0" Click="SaveButton_Click"
-            Background="#F3AD0C" Foreground="White" Content="Toepassen"
-            Height="40" Width="165" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
+                Background="#F3AD0C" Foreground="White" Content="Toepassen"
+                Height="40" Width="165" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
         </Grid>
     </Grid>
 </Page>

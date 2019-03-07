@@ -18,5 +18,9 @@
             Height="35" Margin="25,25,25,25" VerticalAlignment="Top"
             HorizontalAlignment="Stretch"
             PlaceholderText="Begin de zoektocht naar bier..."/>
+        <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" Text="" VerticalAlignment="Center"
+            FontFamily="Segoe MDL2 Assets" FontSize="48" Foreground="#F3AD0C"/>
+        <TextBlock HorizontalAlignment="Center" Margin="0,160,0,0" Text="Zoek naar goedkope biertjes met de zoekbalk hierboven." 
+            TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14"/>
     </Grid>
 </Page>

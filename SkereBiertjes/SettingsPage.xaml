@@ -19,17 +19,17 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <ToggleSwitch x:Name="multithreadingToggle" Grid.Row="0" Header="Multithreading"
-            IsOn="True" Toggled="Multithreading_Toggled"/>
+                IsOn="True" Toggled="Multithreading_Toggled"/>
             <Border Grid.Row="1" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
             <TextBlock HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="2" Text="Benchmark" TextWrapping="Wrap" VerticalAlignment="Top"/>
             <Button Grid.Row="3" Margin="0,12,0,0" Click="BenchmarkStart_Click"
-            Background="#F3AD0C" Foreground="White" Content="Start"
-            Height="40" Width="165" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
+                Background="#F3AD0C" Foreground="White" Content="Start"
+                Height="40" Width="165" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
         </Grid>
         <TextBlock HorizontalAlignment="Left" Margin="25,0,25,45" Text="© SkereBiertjes 2019  | Michael van Dijk, Henk van Maanen, Yosh Schoemaker, Aron Soppe, Chiel Timmermans" 
             TextWrapping="Wrap" VerticalAlignment="Bottom" Foreground="#757575" FontSize="12"/>
         <TextBlock TextWrapping="WrapWholeWords" Foreground="#F3AD0C" FontSize="12"
-                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="25,0,25,25">
+            HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="25,0,25,25">
             <Hyperlink NavigateUri="https://github.com/HenkVanMaanen/ThreadingInCSharp">GitHub Repository</Hyperlink>
         </TextBlock>
     </Grid>

@@ -19,7 +19,7 @@ namespace SkereBiertjes
 {
 
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// The app root. Contains the navigation bar, basic layout every page got, and includes all the pages.
     /// </summary>
     public sealed partial class AppRoot : Page
     {
@@ -29,9 +29,10 @@ namespace SkereBiertjes
             this.InitializeComponent();
         }
 
+        // Runs when the NavView is loaded
         private void NavView_Loaded(object sender, RoutedEventArgs args)
         {
-            // set the initial SelectedItem
+            // Set the initial SelectedItem to 'home'
             foreach (NavigationViewItemBase item in NavView.MenuItems)
             {
                 if (item is NavigationViewItem && item.Tag.ToString() == "home")
@@ -41,15 +42,24 @@ namespace SkereBiertjes
                 }
             }
 
+            // Navigate to home (MainPage)
             ContentFrame.Navigate(typeof(MainPage));
+
+            // Change 'Settings' text to 'Instellingen'
+            var settings = (NavigationViewItem)NavView.SettingsItem;
+            settings.Content = "Instellingen";
         }
 
+        // Fires when the user clicks a menu item
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
+            // If Settings was clicked, navigate to the Settings page
             if (args.IsSettingsSelected)
             {
                 ContentFrame.Navigate(typeof(SettingsPage));
             }
+            
+            // Else some other menu item was clicked
             else
             {
                 NavigationViewItem item = args.SelectedItem as NavigationViewItem;
