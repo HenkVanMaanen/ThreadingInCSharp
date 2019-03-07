@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using HtmlAgilityPack;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace SkereBiertjes
 {
@@ -16,19 +16,22 @@ namespace SkereBiertjes
         public GallEnGallScraper()
         {
             beers = new List<Beer>();
-            string StartURL = "D:/Drives";
-            //string StartURL = "C:/Users/chiel/Persoonlijk";
-            StandardURL = StartURL + "/SCHOOL TI STENDEN/Technische informatica jaar 3/Periode 3/C# multithreading/C# multithreading/Documenten/Test data/gall&gall.html";
+            StandardURL = @"Data/gall&gall.html";
         }
 
         string Scraper.getHTML()
         {
             var doc = new HtmlDocument();
-            doc.Load(StandardURL);
+        
+            doc.LoadHtml(StandardURL);
 
-            var node = doc.DocumentNode.SelectSingleNode("//body");
+            var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class,'product-block dotted vertical bier-speciaal-bier-tripel')]");
 
-            Debug.WriteLine(node);
+            foreach (var node in nodes)
+            {
+
+                Debug.WriteLine(node.Attributes["value"].Value);
+            }
             return null;
         }
 

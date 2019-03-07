@@ -184,10 +184,10 @@ namespace SkereBiertjes
             Scraper scraper2 = new GallEnGallScraper();
             scraper2.getHTML();
 
-            foreach (Scraper scraper in this.scrapers)
-            {
-                scraper.getHTML();
-            }
+            //foreach (Scraper scraper in this.scrapers)
+            //{
+            //    scraper.getHTML();
+            //}
         }
 
         public Scraper[] getScrapers()
