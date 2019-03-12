@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace SkereBiertjes
 {
@@ -52,6 +53,16 @@ namespace SkereBiertjes
         public string getUrl()
         {
             return this.url;
+        }
+
+        public void printInfo()
+        {
+            Debug.WriteLine("Brand:" + this.brand);
+            Debug.WriteLine("Volume:" + this.volume);
+            Debug.WriteLine("shop:" + this.shop);
+            Debug.WriteLine("priceNormalized:" + this.priceNormalized);
+            Debug.WriteLine("discount:" + this.discount);
+            Debug.WriteLine("url:" + this.url);
         }
         
     }

@@ -38,30 +38,40 @@ namespace SkereBiertjes
                 Debug.WriteLine("DocumentNode == null");
                 return null;
             }
-            Debug.WriteLine(doc.ParseErrors);
-            Debug.WriteLine("Count" + nodes.Count);
 
             foreach (var node in nodes)
             {
                 if (node != null)
                 {
-                    var data = node.Attributes;
+                    HtmlNodeCollection node2 = node.SelectNodes(".//img[contains(@itemprop,'image')]");
+                    Debug.WriteLine(node2["img"].Attributes["src"].Value);
+
                     foreach (var dataTrackingImpression in node.Attributes)
                     {
                         if (dataTrackingImpression.Name == "data-tracking-impression")
                         {
-                            var Value = dataTrackingImpression.Value;
-                            JObject json = JObject.Parse(Value);
-                            Debug.WriteLine(json);
-                            Beer beer = CreateBeer(json["name"].ToString(), 55, Int32.Parse(json["price"].ToString()), "", "");
-                            Debug.WriteLine(beer);
-
+                            JObject json = JObject.Parse(dataTrackingImpression.Value);
+                            Beer beer = this.parseData(json);
+                            beer.printInfo();
                         }
                     }
 
                 }
             }
             return null;
+        }
+         
+        private Beer parseData(JObject json)
+        {
+            string name = json["name"].ToString();
+            int volume = this.parseNameToVolume(name);
+            int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString()) * 100));
+            string discount = "";
+            string url = "";
+            Beer beer = CreateBeer(name, volume, price, discount, url);
+
+
+            return beer;
         }
 
         List<Beer> Scraper.parseHTML()
@@ -77,6 +87,25 @@ namespace SkereBiertjes
         private Beer CreateBeer(string brand, int volume, int priceNormalized, string discount, string url)
         {
             return new Beer(brand, volume, priceNormalized, discount, "Gall&Gall", url);
+        }
+
+        private int parseNameToVolume(string title)
+        {
+            if(title == "")
+            {
+                return -1;
+            }
+
+            string[] words = title.Split(' ');
+            if (words[words.Length - 1].Contains("CL"))
+            {
+                string word = words[words.Length - 1];
+                word = word.Remove(word.Length - 2, 2);
+                return Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10)); 
+            }
+            return 0;
+
+
         }
     }
 }
