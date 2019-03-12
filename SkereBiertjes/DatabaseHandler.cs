@@ -137,7 +137,7 @@ namespace SkereBiertjes
             using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
             {
                 //create delete query
-                SqliteCommand insertSql = new SqliteCommand("DELETE FROM beers", db);
+                SqliteCommand insertSql = new SqliteCommand("TRUNCATE TABLE beers", db);
 
                 //run the delete query
                 try
