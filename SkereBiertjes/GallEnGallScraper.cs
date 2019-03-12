@@ -59,6 +59,7 @@ namespace SkereBiertjes
                 {
                     //parse data from node
                     Beer beer = this.parseData(node);
+
                     beers.Add(beer);
 
                     //print info from beer
@@ -88,13 +89,28 @@ namespace SkereBiertjes
             string name = json["name"].ToString();
             int volume = this.parseNameToVolume(name);
             int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString()) * 100));
-            string discount = "";
+            string discount = parseDiscount(node.InnerText);
 
             //create beer
             Beer beer = CreateBeer(name, volume, price, discount, ImageURL);
 
-
             return beer;
+        }
+
+        private string parseDiscount(string text)
+        {
+            text = text.Remove(0, text.IndexOf('=') + 2);
+            text = text.Remove(text.IndexOf('\n'), text.Length - text.IndexOf('\n'));
+            text = text.Replace("\\", "");
+            text = text.Replace("=\"", "=\\\"");
+            text = text.Replace("\">", "\\\">");
+            text = text.Replace(";", "");
+            JObject json = JObject.Parse(text);
+            if (json["product"]["sticker"].ToString() != "False")
+            {
+                return json["product"]["sticker"]["title"].ToString();
+            }
+            return "";
         }
 
         public List<Beer> getBeers()
