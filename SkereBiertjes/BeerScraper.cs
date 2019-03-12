@@ -16,6 +16,7 @@ namespace SkereBiertjes
         {
             //create the database handler
             this.databaseHandler = new DatabaseHandler("SkereBiertjesV1.db");
+            this.scrapers = new List<Scraper>();
 
             //create fake data
             List<Beer> beers = new List<Beer> {
@@ -181,13 +182,12 @@ namespace SkereBiertjes
 
             //get all data from the database.
             //this.beers = this.databaseHandler.get();
-            Scraper scraper2 = new GallEnGallScraper();
-            scraper2.getHTML();
+            scrapers.Add(new GallEnGallScraper());
 
-            //foreach (Scraper scraper in this.scrapers)
-            //{
-            //    scraper.getHTML();
-            //}
+            foreach (Scraper scraper in this.scrapers)
+            {
+                scraper.parseHTML();
+            }
         }
 
         public Scraper[] getScrapers()
