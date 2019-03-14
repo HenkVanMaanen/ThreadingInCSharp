@@ -14,7 +14,7 @@ namespace SkereBiertjes
         public GUI()
         {
             this.beerScraper = new BeerScraper();
-            Task T1 = new Task(() => beerScraper.start());
+            Task T1 = new Task(() => { beerScraper.start();});
             T1.Start();
 
             Debug.WriteLine("Beerscraper started");

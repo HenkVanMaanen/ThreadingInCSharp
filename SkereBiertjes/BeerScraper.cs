@@ -195,9 +195,22 @@ namespace SkereBiertjes
             throw new System.NotImplementedException();
         }
 
-        public Beer[] search(string keyword, System.String filters)
+        public List<Beer> search(string keyword, System.String filters) //Filters zijn merk, type, winkel, keyword
         {
-            throw new System.NotImplementedException();
+            List<Beer> b = new List<Beer>();
+            b = this.databaseHandler.get();
+
+            IEnumerable<Beer> linqQuery = from element in b
+                                          where element.getBrand().Contains(keyword)
+                                          select element;
+
+            List<Beer> beers = new List<Beer>();
+            foreach (Beer beer in linqQuery)
+            {
+                beers.Add(beer);
+                Debug.WriteLine(beer.getBrand());
+            }
+            return beers;
         }
 
         public void getData()
