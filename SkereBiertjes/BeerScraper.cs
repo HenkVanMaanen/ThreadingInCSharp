@@ -182,7 +182,8 @@ namespace SkereBiertjes
 
             //get all data from the database.
             //this.beers = this.databaseHandler.get();
-            scrapers.Add(new GallEnGallScraper());
+            //scrapers.Add(new GallEnGallScraper());
+            scrapers.Add(new JumboScraper());
 
             foreach (Scraper scraper in this.scrapers)
             {

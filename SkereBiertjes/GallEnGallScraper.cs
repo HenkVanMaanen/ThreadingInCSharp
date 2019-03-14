@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using HtmlAgilityPack;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace SkereBiertjes
 {
@@ -44,12 +42,6 @@ namespace SkereBiertjes
                 Debug.WriteLine("No nodes selected");
                 return null;
             }
-            //check if document node is not null
-            if (doc.DocumentNode == null)
-            {
-                Debug.WriteLine("DocumentNode == null");
-                return null;
-            }
 
             //loop over all articles
             foreach (var node in nodes)
@@ -66,6 +58,13 @@ namespace SkereBiertjes
                     beer.printInfo();
                 }
             }
+            beers[0].printInfo();
+            beers[2].printInfo();
+            return beers;
+        }
+
+        public List<Beer> getBeers()
+        {
             return beers;
         }
 
@@ -97,27 +96,6 @@ namespace SkereBiertjes
             return beer;
         }
 
-        private string parseDiscount(string text)
-        {
-            text = text.Remove(0, text.IndexOf('=') + 2);
-            text = text.Remove(text.IndexOf('\n'), text.Length - text.IndexOf('\n'));
-            text = text.Replace("\\", "");
-            text = text.Replace("=\"", "=\\\"");
-            text = text.Replace("\">", "\\\">");
-            text = text.Replace(";", "");
-            JObject json = JObject.Parse(text);
-            if (json["product"]["sticker"].ToString() != "False")
-            {
-                return json["product"]["sticker"]["title"].ToString();
-            }
-            return "";
-        }
-
-        public List<Beer> getBeers()
-        {
-            return beers;
-        }
-
         //create a beer with Gall&Gall allready in it;
         private Beer CreateBeer(string brand, int volume, int priceNormalized, string discount, string url)
         {
@@ -142,6 +120,22 @@ namespace SkereBiertjes
                 return Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10)); 
             }
             return 0;
+        }
+
+        private string parseDiscount(string text)
+        {
+            text = text.Remove(0, text.IndexOf('=') + 2);
+            text = text.Remove(text.IndexOf('\n'), text.Length - text.IndexOf('\n'));
+            text = text.Replace("\\", "");
+            text = text.Replace("=\"", "=\\\"");
+            text = text.Replace("\">", "\\\">");
+            text = text.Replace(";", "");
+            JObject json = JObject.Parse(text);
+            if (json["product"]["sticker"].ToString() != "False")
+            {
+                return json["product"]["sticker"]["title"].ToString();
+            }
+            return "";
         }
     }
 }
