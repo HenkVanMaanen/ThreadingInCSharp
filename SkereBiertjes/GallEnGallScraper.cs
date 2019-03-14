@@ -87,19 +87,20 @@ namespace SkereBiertjes
             //parse to usable data
             string name = json["name"].ToString();
             int volume = this.parseNameToVolume(name);
+            int bottleAmount = 1;
             int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString()) * 100));
             string discount = parseDiscount(node.InnerText);
 
             //create beer
-            Beer beer = CreateBeer(name, volume, price, discount, ImageURL);
+            Beer beer = CreateBeer(name, volume, bottleAmount, price, discount, ImageURL);
 
             return beer;
         }
 
         //create a beer with Gall&Gall allready in it;
-        private Beer CreateBeer(string brand, int volume, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, priceNormalized, discount, "Gall&Gall", url);
+            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Gall&Gall", url);
         }
 
         //bc volume is only accisble in name, parse name to get volume in ml
