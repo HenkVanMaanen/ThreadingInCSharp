@@ -87,9 +87,10 @@ namespace SkereBiertjes
             //parse to usable data
             string name = json["name"].ToString();
             int volume = this.parseNameToVolume(name);
-            int bottleAmount = 1;
             int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString()) * 100));
-            string discount = parseDiscount(node.InnerText);
+            JObject jsonParsed = parseToJson(node.InnerText);
+            string discount = parseToDiscount(jsonParsed);
+            int bottleAmount = parseToAmountDiscount(jsonParsed);
 
             //create beer
             Beer beer = CreateBeer(name, volume, bottleAmount, price, discount, ImageURL);
@@ -120,10 +121,10 @@ namespace SkereBiertjes
                 word = word.Remove(word.Length - 2, 2);
                 return Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10)); 
             }
-            return 0;
+            return -1;
         }
 
-        private string parseDiscount(string text)
+        private JObject parseToJson(string text)
         {
             text = text.Remove(0, text.IndexOf('=') + 2);
             text = text.Remove(text.IndexOf('\n'), text.Length - text.IndexOf('\n'));
@@ -131,12 +132,25 @@ namespace SkereBiertjes
             text = text.Replace("=\"", "=\\\"");
             text = text.Replace("\">", "\\\">");
             text = text.Replace(";", "");
-            JObject json = JObject.Parse(text);
+            return JObject.Parse(text);
+        }
+
+        private string parseToDiscount(JObject json)
+        {
             if (json["product"]["sticker"].ToString() != "False")
             {
                 return json["product"]["sticker"]["title"].ToString();
             }
             return "";
+        }
+
+        private int parseToAmountDiscount(JObject json)
+        {
+            if (json["availability"]["available_as_package"].ToString() == "False")
+            {
+                return 1;
+            }
+            return Convert.ToInt32(json["availability"]["available_as_package"]["qos"].ToString());
         }
     }
 }
