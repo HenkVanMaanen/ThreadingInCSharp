@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -10,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -23,21 +27,53 @@ namespace SkereBiertjes
     /// </summary>
     public sealed partial class MainPage : Page
     {
-    
+        private ObservableCollection<string> suggestions;
+
         public MainPage()
         {
+            suggestions = new ObservableCollection<string>();
             this.InitializeComponent();
         }
 
         private void BeerSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
+            suggestions.Clear();
             // Only get results when it was a user typing, 
             // otherwise assume the value got filled in by TextMemberPath 
             // or the handler for SuggestionChosen.
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                //Set the ItemsSource to be your filtered dataset
-                //sender.ItemsSource = dataset;
+                if (!string.IsNullOrWhiteSpace(sender.Text))
+                {
+                    var possibleSuggestions = new ObservableCollection<string>();
+                    possibleSuggestions.Clear();
+                    possibleSuggestions.Add("Albert Heijn");
+                    possibleSuggestions.Add("Jumbo");
+                    possibleSuggestions.Add("Gal & Gal");
+                    possibleSuggestions.Add("Coop");
+                    possibleSuggestions.Add("PLUS");
+                    possibleSuggestions.Add("Hertog Jan");
+                    possibleSuggestions.Add("Grolsch");
+                    possibleSuggestions.Add("Palm");
+                    possibleSuggestions.Add("Bavaria");
+                    possibleSuggestions.Add("Brand");
+                    possibleSuggestions.Add("Heineken");
+                    possibleSuggestions.Add("Jupiler");
+                    possibleSuggestions.Add("Kordaat");
+                    possibleSuggestions.Add("Kornuit");
+                    possibleSuggestions.Add("Amstel");
+                    possibleSuggestions.Add("Gulpener");
+
+                    foreach (string possibleSuggestion in possibleSuggestions)
+                    {
+                        if (possibleSuggestion.ToLower().Contains(sender.Text.ToLower().Trim()))
+                        {
+                            suggestions.Add(possibleSuggestion);
+                        }
+                    }
+
+                    sender.ItemsSource = suggestions;
+                }
             }
         }
 
@@ -58,6 +94,21 @@ namespace SkereBiertjes
             {
                 // Use args.QueryText to determine what to do.
             }
+        }
+
+        private void EmptyStateTextBlock_Loaded(object sender, RoutedEventArgs e)
+        {
+            var searchTextArray = new[]
+            {
+                "Zuinig zuipen? Gebruik de zoekbalk hierboven!",
+                "HAAA, BIER!!! ZOEKEN MAAR!",
+                "Zoek naar goedkope biertjes met de zoekbalk hierboven.",
+                "Probleem\'n? Poar neem\'n! Zoek naar goedkope biertjes hierboven"
+            };
+
+            Random rnd = new Random();
+            int rnd_num = rnd.Next(0, (searchTextArray.Length));
+            EmptyStateTextBlock.Text = searchTextArray[rnd_num];
         }
     }
 }

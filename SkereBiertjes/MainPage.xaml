@@ -17,9 +17,11 @@
             SuggestionChosen="BeerSearchBox_SuggestionChosen"
             Height="35" Margin="25,25,25,25" VerticalAlignment="Top"
             HorizontalAlignment="Stretch"
-            PlaceholderText="Begin de zoektocht naar bier..."/>
+            PlaceholderText="Begin de zoektocht naar bier...">
+            <RelativePanel/>
+        </AutoSuggestBox>
 
-        <Grid Grid.ColumnSpan="2" Margin="24,96,24,0">
+        <Grid x:Name="BeerItemsGrid" Grid.ColumnSpan="2" Margin="24,96,24,0" Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
@@ -65,7 +67,7 @@
             <!-- End of that result -->
 
             <Border Grid.Row="3" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
-            
+
             <!-- One result -->
             <Grid Grid.Row="4" Margin="0,12,0,12">
                 <Grid.RowDefinitions>
@@ -98,14 +100,16 @@
 
             </Grid>
             <!-- End of that result -->
-            
+
         </Grid>
 
         <!-- Empty state 'Begin zoektocht naar bier' -->
-        <!-- <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" Text="" VerticalAlignment="Center"
+        <RelativePanel x:Name="EmptyStateElements" HorizontalAlignment="Center" Height="245" Margin="0,0,0,0" VerticalAlignment="Center" Width="415" Visibility="Visible">
+            <TextBlock HorizontalAlignment="Left" Margin="184,75,0,0" Text="&#xE1A3;" VerticalAlignment="Top"
             FontFamily="Segoe MDL2 Assets" FontSize="48" Foreground="#F3AD0C"/>
-        <TextBlock HorizontalAlignment="Center" Margin="0,160,0,0" Text="Zoek naar goedkope biertjes met de zoekbalk hierboven." 
-            TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14"/> -->
+            <TextBlock x:Name="EmptyStateTextBlock" HorizontalAlignment="Center" Margin="0,170,0,0" Text="Zoek naar goedkope biertjes met de zoekbalk hierboven." 
+            TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" TextAlignment="Center" Width="417" Loaded="EmptyStateTextBlock_Loaded" />
+        </RelativePanel>
 
 
     </Grid>

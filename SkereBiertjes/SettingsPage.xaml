@@ -18,8 +18,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <ToggleSwitch x:Name="multithreadingToggle" Grid.Row="0" Header="Multithreading"
-                IsOn="True" Toggled="Multithreading_Toggled"/>
+            <ToggleSwitch x:Name="multithreadingToggle" Grid.Row="0" Header="Multithreading" Toggled="Multithreading_Toggled"/>
             <Border Grid.Row="1" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
             <TextBlock HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="2" Text="Benchmark" TextWrapping="Wrap" VerticalAlignment="Top"/>
             <Button Grid.Row="3" Margin="0,12,0,0" Click="BenchmarkStart_Click"
