@@ -15,7 +15,7 @@ namespace SkereBiertjes
         public BeerScraper()
         {
             //create the database handler
-            this.databaseHandler = new DatabaseHandler("SkereBiertjesV2.db");
+            this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
             this.scrapers = new List<Scraper>();
             this.databaseHandler.delete();
             //create fake data
@@ -51,39 +51,67 @@ namespace SkereBiertjes
         public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker
         {
             List<Beer> b = new List<Beer>();
+            List<Beer> filtered = new List<Beer>();
+            List<Beer> beers = new List<Beer>();
+
             b = this.databaseHandler.get();
-            
+
+            IEnumerable<Beer> filterQuery = null;
+
             if (filter.getBrand() != "")
             {
-                IEnumerable<Beer> filterQuery = from element in b
-                                                where element.getBrand().Contains(filter.getBrand())
-                                                select element;
+                filterQuery = from element in b
+                              where element.getBrand().Contains(filter.getBrand())
+                              select element;
             }
             if (filter.getShop() != "")
             {
-                IEnumerable<Beer> filterQuery = from element in b
-                                                where element.getShopName().Contains(filter.getShop())
-                                                select element;
+                filterQuery = from element in b
+                              where element.getShopName().Contains(filter.getShop())
+                              select element;
             }
             if (filter.getType() != "")
             {
-                IEnumerable<Beer> filterQuery = from element in b
-                                                where element.getShopName().Contains(filter.getType())
-                                                select element;
+                int amountOfBottles = 0;
+                if(filter.getType() == "kratjes")
+                {
+                    amountOfBottles = 24;
+                } else if(filter.getType() == "blikjes")
+                {
+                    amountOfBottles = 6;
+                }
+                else
+                {
+                    amountOfBottles = 1;
+                }
+
+                filterQuery = from element in b
+                              where element.getBottleAmount().Equals(amountOfBottles)
+                              select element;
             }
 
-
-            IEnumerable<Beer> searchQuery = from element in b
-                                          where element.getBrand().Contains(keyword)
-                                          select element;
-
-            List<Beer> beers = new List<Beer>();
-            foreach (Beer beer in searchQuery)
+            if (filterQuery != null)
             {
-                beers.Add(beer);
-                Debug.WriteLine("Bier is: " + beer.getBrand());
+                foreach (Beer beer in filterQuery)
+                {
+                    filtered.Add(beer);
+                }
+                b = filtered;
             }
-            return beers;
+
+            if (keyword != "")
+            {
+                IEnumerable<Beer> searchQuery = from element in b
+                                                where element.getBrand().Contains(keyword)
+                                                select element;
+
+                foreach (Beer beer in searchQuery)
+                {
+                    beers.Add(beer);
+                }
+                b = beers;
+            }
+            return b;
         }
 
         public void getData()

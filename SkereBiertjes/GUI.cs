@@ -10,11 +10,13 @@ namespace SkereBiertjes
     public class GUI
     {
         private BeerScraper beerScraper;
+        private Filter filter;
 
         public GUI()
         {
             this.beerScraper = new BeerScraper();
-            Task T1 = new Task(() => { beerScraper.start();});
+            this.filter = new Filter("Brand", "", "");
+            Task T1 = new Task(() => { beerScraper.start(); beerScraper.search("", this.filter); });
             T1.Start();
 
             Debug.WriteLine("Beerscraper started");

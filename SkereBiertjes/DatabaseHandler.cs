@@ -105,7 +105,7 @@ namespace SkereBiertjes
                     foreach (Beer beer in Beers)
                     {
                         //add for every beer a new line to the insert query
-                        Rows.Add(string.Format("('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')",
+                        Rows.Add(string.Format("('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}')",
                             MySqlHelper.EscapeString(beer.getBrand()),
                             MySqlHelper.EscapeString(beer.getVolume().ToString()),
                             MySqlHelper.EscapeString(beer.getBottleAmount().ToString()),
