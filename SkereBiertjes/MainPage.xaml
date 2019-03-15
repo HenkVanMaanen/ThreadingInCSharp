@@ -18,9 +18,95 @@
             Height="35" Margin="25,25,25,25" VerticalAlignment="Top"
             HorizontalAlignment="Stretch"
             PlaceholderText="Begin de zoektocht naar bier..."/>
-        <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" Text="" VerticalAlignment="Center"
+
+        <Grid Grid.ColumnSpan="2" Margin="24,96,24,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="0,12,0,0" Text="4 resultaten in 36 seconden" 
+                   TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#757575" FontSize="12"/>
+            <Border Grid.Row="1" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
+
+            <!-- One result -->
+            <Grid Grid.Row="2" Margin="0,12,0,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="0,12,0,0" Text="Grolsch Premium pilsner krat" 
+                   TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000" FontSize="14"/>
+
+                <Grid Grid.Row="1" Margin="0,12,0,12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Image Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Height="50" Margin="0,0,0,0" VerticalAlignment="Center" Width="50" Source="/Assets/ah.png" Stretch="Uniform"/>
+                    <Image Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Source="https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80" Stretch="Uniform"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Margin="0,24,0,0" Text="€10.49" 
+                        TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#F3AD0C" FontSize="18" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Margin="0,48,0,0" Text="€17.49" 
+                        TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000" FontSize="14" TextDecorations="Strikethrough"/>
+
+                </Grid>
+
+            </Grid>
+            <!-- End of that result -->
+
+            <Border Grid.Row="3" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
+            
+            <!-- One result -->
+            <Grid Grid.Row="4" Margin="0,12,0,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="0,12,0,0" Text="Grolsch Premium Pilsner Fles 24 x 30cl" 
+                   TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000" FontSize="14"/>
+
+                <Grid Grid.Row="1" Margin="0,12,0,12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Image Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Height="50" Margin="0,0,0,0" VerticalAlignment="Center" Width="50" Source="Assets/jumbo.png" Stretch="Uniform"/>
+                    <Image Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Source="https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80" Stretch="Uniform"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Margin="0,24,0,0" Text="€10.49" 
+                        TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#F3AD0C" FontSize="18" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Margin="0,48,0,0" Text="€17.49" 
+                        TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000" FontSize="14" TextDecorations="Strikethrough"/>
+
+                </Grid>
+
+            </Grid>
+            <!-- End of that result -->
+            
+        </Grid>
+
+        <!-- Empty state 'Begin zoektocht naar bier' -->
+        <!-- <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" Text="" VerticalAlignment="Center"
             FontFamily="Segoe MDL2 Assets" FontSize="48" Foreground="#F3AD0C"/>
         <TextBlock HorizontalAlignment="Center" Margin="0,160,0,0" Text="Zoek naar goedkope biertjes met de zoekbalk hierboven." 
-            TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14"/>
+            TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14"/> -->
+
+
     </Grid>
 </Page>
