@@ -58,8 +58,6 @@ namespace SkereBiertjes
                     beer.printInfo();
                 }
             }
-            beers[0].printInfo();
-            beers[2].printInfo();
             return beers;
         }
 
