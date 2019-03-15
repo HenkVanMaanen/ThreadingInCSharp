@@ -172,7 +172,7 @@ namespace SkereBiertjes
                 new Beer("Grolsch", 330,  800, "", "Jumbo", "http://pils.com"),
             };
 
-            
+
         }
 
         public void start()
@@ -195,20 +195,40 @@ namespace SkereBiertjes
             throw new System.NotImplementedException();
         }
 
-        public List<Beer> search(string keyword, System.String filters) //Filters zijn merk, type, winkel, keyword
+        public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker
         {
             List<Beer> b = new List<Beer>();
             b = this.databaseHandler.get();
+            
+            if (filter.getBrand() != "")
+            {
+                IEnumerable<Beer> filterQuery = from element in b
+                                                where element.getBrand().Contains(filter.getBrand())
+                                                select element;
+            }
+            if (filter.getShop() != "")
+            {
+                IEnumerable<Beer> filterQuery = from element in b
+                                                where element.getShopName().Contains(filter.getShop())
+                                                select element;
+            }
+            if (filter.getType() != "")
+            {
+                IEnumerable<Beer> filterQuery = from element in b
+                                                where element.getShopName().Contains(filter.getType())
+                                                select element;
+            }
 
-            IEnumerable<Beer> linqQuery = from element in b
+
+            IEnumerable<Beer> searchQuery = from element in b
                                           where element.getBrand().Contains(keyword)
                                           select element;
 
             List<Beer> beers = new List<Beer>();
-            foreach (Beer beer in linqQuery)
+            foreach (Beer beer in searchQuery)
             {
                 beers.Add(beer);
-                Debug.WriteLine(beer.getBrand());
+                Debug.WriteLine("Bier is: " + beer.getBrand());
             }
             return beers;
         }
@@ -221,6 +241,35 @@ namespace SkereBiertjes
         public int timeToScrape()
         {
             throw new System.NotImplementedException();
+        }
+    }
+
+    public class Filter
+    {
+        private string brand;
+        private string shop;
+        private string type;
+
+        public Filter(string brand, string shop, string type)
+        {
+            this.brand = brand;
+            this.shop = shop;
+            this.type = type;
+        }
+
+        public string getBrand()
+        {
+            return brand;
+        }
+
+        public string getShop()
+        {
+            return shop;
+        }
+
+        public string getType()
+        {
+            return type;
         }
     }
 }
