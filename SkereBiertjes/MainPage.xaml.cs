@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -14,7 +12,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using TextBlock = Windows.UI.Xaml.Controls.TextBlock;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -26,6 +23,7 @@ namespace SkereBiertjes
     /// </summary>
     public sealed partial class MainPage : Page
     {
+    
         public MainPage()
         {
             this.InitializeComponent();
@@ -33,7 +31,6 @@ namespace SkereBiertjes
 
         private void BeerSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            Debug.WriteLine("entering text");
             // Only get results when it was a user typing, 
             // otherwise assume the value got filled in by TextMemberPath 
             // or the handler for SuggestionChosen.
@@ -61,12 +58,6 @@ namespace SkereBiertjes
             {
                 // Use args.QueryText to determine what to do.
             }
-        }
-
-        private void PlaceholderTextBlockLoaded(object sender, RoutedEventArgs e)
-        {
-            TextBlock textBlock = sender as TextBlock;
-            textBlock.Text = "test";
         }
     }
 }
