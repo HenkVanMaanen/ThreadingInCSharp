@@ -3,17 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
 namespace SkereBiertjes
 {
-    public abstract class GallEnGallScraper : Scraper
+    public class GallEnGallScraper : Scraper
     {
         public string StandardURL;
 
         public Beer Beer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public abstract Beer[] getBeers();
+        public Beer[] getBeers()
+        {
+            throw new NotImplementedException();
+        }
 
-        string Scraper.getHTML()
+        async Task<List<string>> Scraper.getHTML()
         {
             throw new NotImplementedException();
         }
