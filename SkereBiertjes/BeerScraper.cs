@@ -34,7 +34,7 @@ namespace SkereBiertjes
             //get all data from the database.
             this.beers = this.databaseHandler.get();
 
-            this.getData();
+            this.start();
         }
 
         public void start()
@@ -46,7 +46,9 @@ namespace SkereBiertjes
             //this.beers = this.databaseHandler.get();
             //scrapers.Add(new GallEnGallScraper());
             //scrapers.Add(new JumboScraper());
-            scrapers.Add(new PLUSScraper());
+            //scrapers.Add(new PLUSScraper());
+            //scrapers.Add(new AHScraper());
+            scrapers.Add(new CoopScraper());
 
             foreach (Scraper scraper in this.scrapers)
             {
