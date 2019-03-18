@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SkereBiertjes
 {
     public interface Scraper
     {
-        Beer Beer { get; set; }
-
-        Beer[] getBeers();
-        string getHTML();
-        Beer[] parseHTML();
+        List<Beer> getBeers();
+        Task<List<string>> getHTML();
+        List<Beer> parseHTML();
     }
 }

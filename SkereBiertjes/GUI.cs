@@ -2,16 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SkereBiertjes
 {
     public class GUI
     {
         private BeerScraper beerScraper;
+        private Filter filter;
 
         public GUI()
         {
             this.beerScraper = new BeerScraper();
+            this.filter = new Filter("Brand", "", "");
+            Task T1 = new Task(() => { beerScraper.start(); beerScraper.search("", this.filter); });
+            T1.Start();
+
+            Debug.WriteLine("Beerscraper started");
+
+            T1.Wait();
+            Debug.WriteLine("Beerscraper done");
         }
 
         private void search(System.String keyword)

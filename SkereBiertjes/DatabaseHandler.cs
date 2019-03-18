@@ -33,12 +33,13 @@ namespace SkereBiertjes
                 String tableCommand = "CREATE TABLE IF NOT EXISTS " +
                                         "beers (" +
                                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                                            "brand NVARCHAR(50) NOT NULL," +
+                                            "brand NVARCHAR(255) NOT NULL," +
                                             "volume int NOT NULL," +
+                                            "bottleAmount int NOT NULL," +
                                             "priceNormalized int NOT NULL," +
-                                            "discount string DEFAULT NULL," +
-                                            "shop string NOT NULL," +
-                                            "url string DEFAULT NULL" +
+                                            "discount NVARCHAR(255) DEFAULT NULL," +
+                                            "shop NVARCHAR(100) NOT NULL," +
+                                            "url NVARCHAR(150) DEFAULT NULL" +
                                         "); ";
 
                 SqliteCommand createTable = new SqliteCommand(tableCommand, db);
@@ -74,9 +75,10 @@ namespace SkereBiertjes
                             query.GetString(1),
                             query.GetInt32(2),
                             query.GetInt32(3),
-                            query.GetString(4),
+                            query.GetInt32(4),
                             query.GetString(5),
-                            query.GetString(6)
+                            query.GetString(6),
+                            query.GetString(7)
                         )
                     );
                 }
@@ -94,7 +96,7 @@ namespace SkereBiertjes
             try
             {
                 //create start of the insert query
-                StringBuilder sCommand = new StringBuilder("INSERT INTO beers (brand, volume, priceNormalized, discount, shop, url) VALUES ");
+                StringBuilder sCommand = new StringBuilder("INSERT INTO beers (brand, volume, bottleAmount, priceNormalized, discount, shop, url) VALUES ");
 
                 using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
                 {
@@ -103,9 +105,10 @@ namespace SkereBiertjes
                     foreach (Beer beer in Beers)
                     {
                         //add for every beer a new line to the insert query
-                        Rows.Add(string.Format("('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')",
+                        Rows.Add(string.Format("('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}')",
                             MySqlHelper.EscapeString(beer.getBrand()),
                             MySqlHelper.EscapeString(beer.getVolume().ToString()),
+                            MySqlHelper.EscapeString(beer.getBottleAmount().ToString()),
                             MySqlHelper.EscapeString(beer.getNormalizedPrice().ToString()),
                             MySqlHelper.EscapeString(beer.getDiscount()),
                             MySqlHelper.EscapeString(beer.getShopName()),
