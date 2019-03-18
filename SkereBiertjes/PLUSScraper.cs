@@ -70,13 +70,29 @@ namespace SkereBiertjes
             
             string brand = infoNode.Attributes["data-name"].Value;
             int bottleAmount = this.parseToAmount(brand);
-            int priceNormalized = Convert.ToInt32(Math.Round(Convert.ToDouble(infoNode.Attributes["data-price"].Value) * 100));
+            int priceNormalized = this.getPrice(infoNode);  
             string data = node.SelectSingleNode(".//span[contains(@class, 'product-tile__quantity')]").InnerHtml;
             int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
             int volume = totalVolume / bottleAmount;
             string discount = "";
-            string url = "";
+            string url = "https://plus.nl" + node.SelectSingleNode(".//img[contains(@class, 'lazy')]").Attributes["data-src"].Value.Replace("&#47;", "/");
             return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url);
+        }
+
+        private int getPrice(HtmlNode node)
+        {
+            if(node == null)
+            {
+                return 0;
+            }
+
+            HtmlNode HtmlDiscountPriceNode = node.SelectSingleNode(".//div[contains(@class, 'text-clover')]");
+            if(HtmlDiscountPriceNode != null)
+            {
+                return Convert.ToInt32(HtmlDiscountPriceNode.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", ""));
+            }
+
+            return Convert.ToInt32(Math.Round(Convert.ToDouble(node.Attributes["data-price"].Value) * 100));
         }
 
         private int parseToAmount(string title)
