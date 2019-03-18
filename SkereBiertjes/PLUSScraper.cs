@@ -2,25 +2,126 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HtmlAgilityPack;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SkereBiertjes
 {
-    public abstract class PLUSScraper : Scraper
+    public class PLUSScraper : Scraper
     {
         public string StandardURL;
+        private List<Beer> beers;
 
-        public Beer Beer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public PLUSScraper()
+        {
+            StandardURL = @"Data/plus.html";
+            beers = new List<Beer>();
+        }
 
-        public abstract Beer[] getBeers();
+        List<Beer> Scraper.parseHTML()
+        {
+            List<Beer> beers = new List<Beer>();
+            //get document
+            var doc = new HtmlDocument();
+            doc.OptionFixNestedTags = true;
+            doc.Load(StandardURL);
 
-        string Scraper.getHTML()
+            var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'product-list-block')]");
+
+            if (nodes == null)
+            {
+                Debug.WriteLine("no nodes selected");
+                return null;
+            }
+
+            foreach (var node in nodes)
+            {
+                if (node != null)
+                {
+                    Beer beer = this.parseData(node);
+
+                    beers.Add(beer);
+
+                    beer.printInfo();
+                }
+            }
+
+            return beers;
+        }
+
+        List<Beer> Scraper.getBeers()
         {
             throw new NotImplementedException();
         }
 
-        Beer[] Scraper.parseHTML()
+        async Task<List<string>> Scraper.getHTML()
         {
             throw new NotImplementedException();
+        }
+
+        private Beer parseData(HtmlNode node)
+        {
+            HtmlNode infoNode = node.SelectSingleNode(".//div[contains(@class, 'product-tile__info')]");
+            
+            string brand = infoNode.Attributes["data-name"].Value;
+            int bottleAmount = this.parseToAmount(brand);
+            int priceNormalized = this.getPrice(infoNode);  
+            string data = node.SelectSingleNode(".//span[contains(@class, 'product-tile__quantity')]").InnerHtml;
+            int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
+            int volume = totalVolume / bottleAmount;
+            string discount = "";
+            string url = "https://plus.nl" + node.SelectSingleNode(".//img[contains(@class, 'lazy')]").Attributes["data-src"].Value.Replace("&#47;", "/");
+            return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url);
+        }
+
+        private int getPrice(HtmlNode node)
+        {
+            if(node == null)
+            {
+                return 0;
+            }
+
+            HtmlNode HtmlDiscountPriceNode = node.SelectSingleNode(".//div[contains(@class, 'text-clover')]");
+            if(HtmlDiscountPriceNode != null)
+            {
+                return Convert.ToInt32(HtmlDiscountPriceNode.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", ""));
+            }
+
+            return Convert.ToInt32(Math.Round(Convert.ToDouble(node.Attributes["data-price"].Value) * 100));
+        }
+
+        private int parseToAmount(string title)
+        {
+            if (title == null)
+            {
+                return 1;
+            }
+            int[] size = new int[]{
+                6,
+                12,
+                24
+            };
+
+            for(int idx = 0; idx < size.Length; idx++)
+            {
+                if (title.Contains(size[idx].ToString()))
+                {
+                    return size[idx];
+                }
+            }
+
+
+            return 1;
+        }
+        //create a beer with jumbo allready in it;
+        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        {
+            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "PLUS", url);
         }
     }
 }
