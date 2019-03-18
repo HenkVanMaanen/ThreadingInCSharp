@@ -6,6 +6,10 @@ using HtmlAgilityPack;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
 namespace SkereBiertjes
 {
     public class PLUSScraper : Scraper
@@ -53,7 +57,7 @@ namespace SkereBiertjes
             throw new NotImplementedException();
         }
 
-        string Scraper.getHTML()
+        async Task<List<string>> Scraper.getHTML()
         {
             throw new NotImplementedException();
         }

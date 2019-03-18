@@ -14,6 +14,12 @@ namespace SkereBiertjes
 
         public BeerScraper()
         {
+            scrapers = new List<Scraper>
+            {
+                new AHScraper(),
+                new CoopScraper(),
+            };
+
             //create the database handler
             this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
             this.scrapers = new List<Scraper>();
@@ -25,6 +31,10 @@ namespace SkereBiertjes
             };
 
 
+            //get all data from the database.
+            this.beers = this.databaseHandler.get();
+
+            this.getData();
         }
 
         public void start()
@@ -115,9 +125,14 @@ namespace SkereBiertjes
             return b;
         }
 
-        public void getData()
+        async public void getData()
         {
-            throw new System.NotImplementedException();
+            foreach (Scraper scraper in scrapers) {
+                var w = System.Diagnostics.Stopwatch.StartNew();
+                List<string> pages = await scraper.getHTML();
+                w.Stop();
+                Debug.WriteLine(w.ElapsedMilliseconds);
+            }
         }
 
         public int timeToScrape()

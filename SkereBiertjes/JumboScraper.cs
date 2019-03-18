@@ -5,6 +5,10 @@ using System.Text;
 using System.Diagnostics;
 using HtmlAgilityPack;
 
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
 namespace SkereBiertjes
 {
     public class JumboScraper : Scraper
@@ -52,7 +56,7 @@ namespace SkereBiertjes
             throw new NotImplementedException();
         }
 
-        string Scraper.getHTML()
+        async Task<List<string>> Scraper.getHTML()
         {
             throw new NotImplementedException();
         }

@@ -4,6 +4,10 @@ using HtmlAgilityPack;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
 namespace SkereBiertjes
 {
     public class GallEnGallScraper : Scraper
@@ -19,7 +23,7 @@ namespace SkereBiertjes
             StandardURL = @"Data/gall&gall.html";
         }
 
-        string Scraper.getHTML()
+        async Task<List<string>> Scraper.getHTML()
         {
             return null;
         }
