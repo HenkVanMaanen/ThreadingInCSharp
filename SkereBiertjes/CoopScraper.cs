@@ -18,17 +18,10 @@ namespace SkereBiertjes
 
         public CoopScraper()
         {
+            StandardURL = @"Data/coop.json";
             beers = new List<Beer>();
         }
-        List<Beer> Scraper.getBeers()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public  List<Beer> getBeers()
-        {
-            return beers;
-        }
+
         
         async Task<List<string>> Scraper.getHTML()
         {
@@ -47,6 +40,11 @@ namespace SkereBiertjes
         List<Beer> Scraper.parseHTML()
         {
             throw new NotImplementedException();
+        }
+        
+        List<Beer> Scraper.getBeers()
+        {
+            return beers;
         }
     }
 }

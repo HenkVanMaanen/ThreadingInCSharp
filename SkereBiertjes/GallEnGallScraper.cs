@@ -65,7 +65,7 @@ namespace SkereBiertjes
             return beers;
         }
 
-        public List<Beer> getBeers()
+        List<Beer> Scraper.getBeers()
         {
             return beers;
         }

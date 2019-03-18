@@ -11,12 +11,16 @@ namespace SkereBiertjes
 {
     public class AHScraper : Scraper
     {
-        public string keyword = "bier";
+        private string StandardURL;
+        private string keyword = "bier";
+        private List<Beer> beers;
 
-        public List<Beer> getBeers()
+        public AHScraper()
         {
-            throw new NotImplementedException();
+            StandardURL = @"Data/coop.json";
+            beers = new List<Beer>();
         }
+
 
         async Task<List<string>> Scraper.getHTML()
         {
@@ -39,6 +43,11 @@ namespace SkereBiertjes
         List<Beer> Scraper.parseHTML()
         {
             throw new NotImplementedException();
+        }
+        
+        List<Beer> Scraper.getBeers()
+        {
+            return beers;
         }
     }
 }

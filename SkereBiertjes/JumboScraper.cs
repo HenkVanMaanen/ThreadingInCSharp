@@ -13,11 +13,18 @@ namespace SkereBiertjes
 {
     public class JumboScraper : Scraper
     {
-        public string StandardURL;
+        private string StandardURL;
+        private List<Beer> beers;
         
         public JumboScraper()
         {
+            beers = new List<Beer>();
             StandardURL = @"Data/jumbo.html";
+        }
+
+        async Task<List<string>> Scraper.getHTML()
+        {
+            throw new NotImplementedException();
         }
 
         public List<Beer> parseHTML()
@@ -50,15 +57,10 @@ namespace SkereBiertjes
 
             return beers;
         }
-
+        
         List<Beer> Scraper.getBeers()
         {
-            throw new NotImplementedException();
-        }
-
-        async Task<List<string>> Scraper.getHTML()
-        {
-            throw new NotImplementedException();
+            return beers;
         }
 
         private Beer parseData(HtmlNode node)

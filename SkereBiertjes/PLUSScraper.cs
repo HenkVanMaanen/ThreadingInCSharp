@@ -15,13 +15,15 @@ namespace SkereBiertjes
     public class PLUSScraper : Scraper
     {
         public string StandardURL;
+        private List<Beer> beers;
 
         public PLUSScraper()
         {
             StandardURL = @"Data/plus.html";
+            beers = new List<Beer>();
         }
 
-        public List<Beer> parseHTML()
+        List<Beer> Scraper.parseHTML()
         {
             List<Beer> beers = new List<Beer>();
             //get document
