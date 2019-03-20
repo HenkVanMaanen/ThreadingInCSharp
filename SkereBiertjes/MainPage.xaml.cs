@@ -86,14 +86,46 @@ namespace SkereBiertjes
 
         private void BeerSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            if (args.ChosenSuggestion != null)
+            /*if (args.ChosenSuggestion != null)
             {
                 // User selected an item from the suggestion list, take an action on it here.
             }
             else
             {
                 // Use args.QueryText to determine what to do.
-            }
+            }*/
+
+            EmptyStateElements.Visibility = Visibility.Collapsed;
+
+            List<Beer> beers = new List<Beer>
+            {
+                new Beer("Grolsch", 330, 5, 800, "", "Jumbo", "http://pils.com"),
+                new Beer("Grolsch", 330, 5, 799, "", "Jumbo", "http://pils.com"),
+                new Beer("Grolsch", 330, 25, 1699, "", "Jumbo", "http://pils.com"),
+                new Beer("Grolsch", 330, 25, 1699, "", "Jumbo", "http://pils.com"),
+                new Beer("Grolsch", 330, 6, 899, "", "AH", "http://pils.com"),
+                new Beer("Grolsch", 330, 24, 1099, "1799", "AH", "http://pils.com"),
+                new Beer("Grolsch", 330, 24, 1199, "1899", "Jumbo", "http://pils.com"),
+            };
+
+            /*foreach (var beer in beers)
+            {
+                var autoHeightRowDefinition = new RowDefinition();
+                autoHeightRowDefinition.Height = GridLength.Auto;
+                BeerItemsGrid.RowDefinitions.Add(autoHeightRowDefinition);
+                
+            }*/
+
+            BeerItemsGrid.ItemsSource = new[] {
+                new {BeerDescription="Grolsch 1", ReductionPriceVisibility=Visibility.Collapsed},
+                new {BeerDescription="Grolsch 2", ReductionPriceVisibility=Visibility.Visible},
+                new {BeerDescription="Grolsch 3", ReductionPriceVisibility=Visibility.Collapsed},
+                new {BeerDescription="Grolsch 4", ReductionPriceVisibility=Visibility.Collapsed},
+                new {BeerDescription="Grolsch 5", ReductionPriceVisibility=Visibility.Collapsed},
+                new {BeerDescription="Grolsch 6", ReductionPriceVisibility=Visibility.Collapsed},
+                new {BeerDescription="Grolsch 7", ReductionPriceVisibility=Visibility.Visible},
+                new {BeerDescription="Grolsch 8", ReductionPriceVisibility=Visibility.Collapsed},
+            };
         }
 
         private void EmptyStateTextBlock_Loaded(object sender, RoutedEventArgs e)
