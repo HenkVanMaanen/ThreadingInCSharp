@@ -23,19 +23,19 @@
         </AutoSuggestBox>
 
 
-        <Grid x:Name="InfoGrid" Grid.ColumnSpan="2" Margin="24,24,24,0" Visibility="Visible">
+        <Grid x:Name="InfoGrid" Grid.ColumnSpan="2" Margin="24,24,24,0" Visibility="Visible" Opacity="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="3,80,0,0" Text="4 resultaten in 36 seconden"
+            <TextBlock x:Name="TimingResults" Grid.Row="0" HorizontalAlignment="Left" Margin="3,80,0,0" Text="4 resultaten in 10 seconden"
                        TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#757575" FontSize="12" Canvas.ZIndex="10" />
             <Border Grid.Row="1" Margin="0,5,0,0" BorderThickness="1" BorderBrush="#EAEAEA"
                     VerticalAlignment="Top" HorizontalAlignment="Stretch" />
         </Grid>
 
         <ScrollViewer Canvas.ZIndex="9" Margin="24,130,24,0" VerticalScrollBarVisibility="Hidden">
-            <ItemsControl x:Name="BeerItemsGrid" ItemsSource="{Binding}">
+            <ItemsControl x:Name="BeerItemsGrid" ItemsSource="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                     </ItemsPanelTemplate>
@@ -46,7 +46,7 @@
                         <Grid>
                             <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="0,12,0,0"
                                        Text="{Binding BeerDescription}"
-                                       TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000" FontSize="14" />
+                                       TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000" FontSize="14" Canvas.ZIndex="2" />
 
                             <Grid Grid.Row="1" Margin="0,12,0,12">
                                 <Grid.RowDefinitions>
@@ -60,23 +60,23 @@
 
                                 <Image Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Height="50"
                                        Margin="0,0,0,0"
-                                       VerticalAlignment="Center" Width="50" Source="/Assets/ah.png"
+                                       VerticalAlignment="Center" Width="50" Source="{Binding ShopImageUrl}"
                                        Stretch="Uniform" />
                                 <Image Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Height="100"
                                        Margin="0,0,0,0"
                                        VerticalAlignment="Center" Width="100"
-                                       Source="https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"
+                                       Source="{Binding ImageUrl}"
                                        Stretch="Uniform" />
 
                                 <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"
                                            Margin="0,24,0,0"
-                                           Text="€10.49"
+                                           Text="{Binding Price}"
                                            TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#F3AD0C"
                                            FontSize="18"
                                            FontWeight="Bold" />
                                 <TextBlock Visibility="{Binding ReductionPriceVisibility}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"
                                            Margin="0,48,0,0"
-                                           Text="€17.49"
+                                           Text="{Binding OriginalPrice}"
                                            TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000"
                                            FontSize="14"
                                            TextDecorations="Strikethrough" />
@@ -94,7 +94,7 @@
         <!-- Empty state 'Begin zoektocht naar bier' -->
         <RelativePanel x:Name="EmptyStateElements" HorizontalAlignment="Center" Height="245" Margin="0,0,0,0"
                        VerticalAlignment="Center" Width="415" Visibility="Visible">
-            <TextBlock HorizontalAlignment="Left" Margin="184,75,0,0" Text="&#xE1A3;" VerticalAlignment="Top"
+            <TextBlock x:Name="BigIcon" HorizontalAlignment="Left" Margin="184,75,0,0" Text="&#xE71E;" VerticalAlignment="Top"
                        FontFamily="Segoe MDL2 Assets" FontSize="48" Foreground="#F3AD0C" />
             <TextBlock x:Name="EmptyStateTextBlock" HorizontalAlignment="Center" Margin="0,170,0,0"
                        Text="Zoek naar goedkope biertjes met de zoekbalk hierboven."
@@ -102,5 +102,6 @@
                        Loaded="EmptyStateTextBlock_Loaded" />
         </RelativePanel>
 
+        <ProgressRing x:Name="progressRing" Height="100" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Canvas.ZIndex="2" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True"/>
     </Grid>
 </Page>
