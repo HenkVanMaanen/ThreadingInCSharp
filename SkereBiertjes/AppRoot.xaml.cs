@@ -28,13 +28,16 @@ namespace SkereBiertjes
 
         private BeerScraper beerScraper;
         private List<Beer> beers;
+        private DatabaseHandler databaseHandler;
 
         public AppRoot()
         {
             this.InitializeComponent();
-
+            //create database handler, send this instance to all other classes.
             this.beers = new List<Beer>();
-            this.beerScraper = new BeerScraper();
+            this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
+            this.databaseHandler.delete();
+            this.beerScraper = new BeerScraper(databaseHandler);
             
             Task T1 = new Task(() => {
                 beerScraper.startFindingFirstBeers();
@@ -42,10 +45,6 @@ namespace SkereBiertjes
 
             T1.Start();
             T1.Wait();
-
-            this.beers = this.beerScraper.getBeers();
-
-            Debug.WriteLine(this.beers.Count);
         }
 
         // Runs when the NavView is loaded
@@ -62,7 +61,7 @@ namespace SkereBiertjes
             }
 
             // Navigate to home (MainPage)
-            ContentFrame.Navigate(typeof(MainPage));
+            ContentFrame.Navigate(typeof(MainPage), this.databaseHandler);
 
             // Change 'Settings' text to 'Instellingen'
             var settings = (NavigationViewItem)NavView.SettingsItem;
@@ -82,17 +81,17 @@ namespace SkereBiertjes
             else
             {
                 NavigationViewItem item = args.SelectedItem as NavigationViewItem;
-
-                switch(item.Tag.ToString())
+                
+                switch (item.Tag.ToString())
                 {
                     case "home":
-                        ContentFrame.Navigate(typeof(MainPage), this.beers);
+                        ContentFrame.Navigate(typeof(MainPage), this.databaseHandler);
                         break;
                     case "filters":
                         ContentFrame.Navigate(typeof(FilterPage));
                         break;
                     default:
-                        ContentFrame.Navigate(typeof(MainPage));
+                        ContentFrame.Navigate(typeof(MainPage), this.databaseHandler);
                         break;
                 }
             }

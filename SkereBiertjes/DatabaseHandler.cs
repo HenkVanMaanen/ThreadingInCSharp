@@ -7,10 +7,10 @@ using MySql.Data.MySqlClient;
 
 namespace SkereBiertjes
 {
-    class DatabaseHandler
+    public class DatabaseHandler
     {
         string _databaseName;
-
+        bool benchmark = true;
         //create databasehandler
         public DatabaseHandler(string databaseName)
         {
@@ -25,6 +25,9 @@ namespace SkereBiertjes
         //create the table if it doenst exists yet.
         private void setup()
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            
             using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
             {
                 db.Open();
@@ -48,12 +51,21 @@ namespace SkereBiertjes
 
                 db.Close();
             }
-
+            
+            stopWatch.Stop();
+            int ts = stopWatch.Elapsed.Milliseconds;
+            if (benchmark)
+            {
+                Debug.WriteLine("Time for setup took: " + ts + " ms");
+            }
         }
         
         //get all beers from database and return it as a List<Beer>
         public List<Beer> get()
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             List<Beer> beers = new List<Beer>();
 
             //open database
@@ -86,6 +98,13 @@ namespace SkereBiertjes
                 db.Close();
             }
 
+
+            stopWatch.Stop();
+            int ts = stopWatch.Elapsed.Milliseconds;
+            if (benchmark)
+            {
+                Debug.WriteLine("Time for get took: " + ts + " ms");
+            }
             //return list
             return beers;
         }
@@ -97,6 +116,9 @@ namespace SkereBiertjes
             {
                 return false;
             }
+
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
 
             try
             {
@@ -136,12 +158,22 @@ namespace SkereBiertjes
                 Debug.WriteLine("Exception: " + e.Message);
             }
 
+            stopWatch.Stop();
+            int ts = stopWatch.Elapsed.Milliseconds;
+            if (benchmark)
+            {
+                Debug.WriteLine("Time for store took: " + ts + " ms");
+            }
+
             return true;
         }
         
         //remove all information
         public void delete()
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             using (SqliteConnection db = new SqliteConnection("Filename=" + databaseName))
             {
                 //create delete query
@@ -160,6 +192,13 @@ namespace SkereBiertjes
                 {
                     Debug.WriteLine(ex.Message);
                 }
+            }
+
+            stopWatch.Stop();
+            int ts = stopWatch.Elapsed.Milliseconds;
+            if (benchmark)
+            {
+                Debug.WriteLine("Time for delete took: " + ts + " ms");
             }
         }
     }

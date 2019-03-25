@@ -12,13 +12,10 @@ namespace SkereBiertjes
         private DatabaseHandler databaseHandler;
         private List<Beer> beers;
 
-        public BeerScraper()
+        public BeerScraper(DatabaseHandler databaseHandler)
         {
+            this.databaseHandler = databaseHandler;
             this.beers = new List<Beer>();
-
-            //create the database handler
-            this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
-            this.databaseHandler.delete();
 
             //set all scrapers
             this.scrapers = new List<Scraper>

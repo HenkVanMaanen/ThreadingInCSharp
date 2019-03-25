@@ -33,6 +33,7 @@ namespace SkereBiertjes
         private static string SearchIcon = "\uE1A3";
         private static string ErrorIcon = "\uE783";
         private List<Beer> beers;
+        private DatabaseHandler databaseHandler;
 
         public MainPage()
         {
@@ -92,7 +93,6 @@ namespace SkereBiertjes
         private async void BeerSearchBox_QuerySubmitted(AutoSuggestBox sender,
             AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            Debug.WriteLine(this.beers.Count);
             if (args.ChosenSuggestion == null)
             {
                 progressRing.IsActive = true;
@@ -118,10 +118,6 @@ namespace SkereBiertjes
                 EmptyStateElements.Visibility = Visibility.Collapsed;
 
                 // Beers found and something has been entered in the SearchBox!
-                Debug.WriteLine("TESTING");
-                Debug.WriteLine(string.IsNullOrWhiteSpace(args.QueryText));
-                Debug.WriteLine(this.beers.Count);
-
                 if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beers.Count > 0)
                 {      
                     // Put beers in a new ArrayList for making up the grid
@@ -199,10 +195,10 @@ namespace SkereBiertjes
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if(e.Parameter is List<Beer>)
+            if(e.Parameter is DatabaseHandler)
             {
-                beers = (List<Beer>) e.Parameter;
-                Debug.WriteLine(beers.Count);
+                this.databaseHandler = (DatabaseHandler) e.Parameter;
+                this.beers = databaseHandler.get();
             }
             base.OnNavigatedTo(e);
         }
