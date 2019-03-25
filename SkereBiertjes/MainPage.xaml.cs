@@ -32,10 +32,13 @@ namespace SkereBiertjes
         private ObservableCollection<string> suggestions;
         private static string SearchIcon = "\uE1A3";
         private static string ErrorIcon = "\uE783";
+        private BeerScraper beerScraper;
+        private List<Beer> beers;
 
         public MainPage()
         {
             suggestions = new ObservableCollection<string>();
+            beerScraper = new BeerScraper();
             this.InitializeComponent();
         }
 
@@ -103,23 +106,25 @@ namespace SkereBiertjes
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
 
-                List<Beer> beers = new List<Beer>
-                {
-                    new Beer("Grolsch", 330, 5, 800, "", "Coop",
-                        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                    new Beer("Heineken", 330, 5, 799, "", "Jumbo",
-                        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                    new Beer("Grolsch", 330, 25, 1699, "", "Jumbo",
-                        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                    new Beer("Grolsch", 330, 25, 1699, "", "GallEnGall",
-                        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                    new Beer("Grolsch", 330, 6, 899, "", "AH",
-                        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                    new Beer("Grolsch", 330, 24, 1099, "1799", "Plus",
-                        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                    new Beer("Grolsch", 330, 24, 1199, "1899", "Jumbo",
-                        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                };
+                beers = this.beerScraper.start();
+
+                //List<Beer> beers = new List<Beer>
+                //{
+                //    new Beer("Grolsch", 330, 5, 800, "", "Coop",
+                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
+                //    new Beer("Heineken", 330, 5, 799, "", "Jumbo",
+                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
+                //    new Beer("Grolsch", 330, 25, 1699, "", "Jumbo",
+                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
+                //    new Beer("Grolsch", 330, 25, 1699, "", "GallEnGall",
+                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
+                //    new Beer("Grolsch", 330, 6, 899, "", "AH",
+                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
+                //    new Beer("Grolsch", 330, 24, 1099, "1799", "Plus",
+                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
+                //    new Beer("Grolsch", 330, 24, 1199, "1899", "Jumbo",
+                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
+                //};
 
                 await Task.Delay(1000);
 

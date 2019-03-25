@@ -25,35 +25,37 @@ namespace SkereBiertjes
             this.scrapers = new List<Scraper>();
             this.databaseHandler.delete();
             //create fake data
-            List<Beer> beers = new List<Beer> {
-                new Beer("Grolsch", 330, 5,  800, "", "Jumbo", "http://pils.com"),
-                new Beer("Grolsch", 330, 5,  799, "", "Jumbo", "http://pils.com"),
-            };
+            //List<Beer> beers = new List<Beer> {
+            //    new Beer("Grolsch", 330, 5,  800, "", "Jumbo", "http://pils.com"),
+            //    new Beer("Grolsch", 330, 5,  799, "", "Jumbo", "http://pils.com"),
+            //};
 
 
             //get all data from the database.
-            this.beers = this.databaseHandler.get();
-
-            this.start();
+            //this.beers = this.databaseHandler.get();
+            
         }
 
-        public void start()
+        public List<Beer> start()
         {
             //add the fake data to the database.
             //this.databaseHandler.store(beers);
 
             //get all data from the database.
             //this.beers = this.databaseHandler.get();
-            //scrapers.Add(new GallEnGallScraper());
-            //scrapers.Add(new JumboScraper());
-            //scrapers.Add(new PLUSScraper());
-            //scrapers.Add(new AHScraper());
+            scrapers.Add(new GallEnGallScraper());
+            scrapers.Add(new JumboScraper());
+            scrapers.Add(new PLUSScraper());
+            scrapers.Add(new AHScraper());
             scrapers.Add(new CoopScraper());
-
+            List<Beer> beers = new List<Beer>();
             foreach (Scraper scraper in this.scrapers)
             {
-                this.databaseHandler.store(scraper.parseHTML());
+                beers.Concat(scraper.parseHTML());
+                //this.databaseHandler.store(scraper.parseHTML());
             }
+
+            return beers;
         }
 
         public Scraper[] getScrapers()
