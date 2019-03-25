@@ -34,7 +34,6 @@ namespace SkereBiertjes
         {
             this.InitializeComponent();
             //create database handler, send this instance to all other classes.
-            this.beers = new List<Beer>();
             this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
             this.databaseHandler.delete();
             this.beerScraper = new BeerScraper(databaseHandler);
