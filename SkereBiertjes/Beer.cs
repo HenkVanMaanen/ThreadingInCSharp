@@ -29,7 +29,7 @@ namespace SkereBiertjes
 
         public string getBrand()
         {
-            return this.brand;
+            return this.brand.Replace("'", "");
         }
 
         public int getVolume()
@@ -63,13 +63,17 @@ namespace SkereBiertjes
 
         public void printInfo()
         {
-            Debug.WriteLine("Brand: " + this.brand);
-            Debug.WriteLine("Volume: " + this.volume);
-            Debug.WriteLine("Amount: " + this.amountBottles);
-            Debug.WriteLine("shop: " + this.shop);
-            Debug.WriteLine("priceNormalized: " + this.priceNormalized);
-            Debug.WriteLine("discount: " + this.discount);
-            Debug.WriteLine("url: " + this.url);
+            bool debug = false;
+            if (debug == true)
+            {
+                Debug.WriteLine("Brand: " + this.brand);
+                Debug.WriteLine("Volume: " + this.volume);
+                Debug.WriteLine("Amount: " + this.amountBottles);
+                Debug.WriteLine("shop: " + this.shop);
+                Debug.WriteLine("priceNormalized: " + this.priceNormalized);
+                Debug.WriteLine("discount: " + this.discount);
+                Debug.WriteLine("url: " + this.url);
+            }
         }
         
     }

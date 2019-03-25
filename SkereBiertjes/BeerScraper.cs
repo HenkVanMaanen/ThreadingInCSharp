@@ -14,53 +14,44 @@ namespace SkereBiertjes
 
         public BeerScraper()
         {
-            scrapers = new List<Scraper>
-            {
-                new AHScraper(),
-                new CoopScraper(),
-            };
+            this.beers = new List<Beer>();
 
             //create the database handler
             this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
-            this.scrapers = new List<Scraper>();
             this.databaseHandler.delete();
-            //create fake data
-            //List<Beer> beers = new List<Beer> {
-            //    new Beer("Grolsch", 330, 5,  800, "", "Jumbo", "http://pils.com"),
-            //    new Beer("Grolsch", 330, 5,  799, "", "Jumbo", "http://pils.com"),
-            //};
 
-
-            //get all data from the database.
-            //this.beers = this.databaseHandler.get();
-            
+            //set all scrapers
+            this.scrapers = new List<Scraper>
+            {
+                new GallEnGallScraper(),
+                new JumboScraper(),
+                new JumboScraper(),
+                new PLUSScraper(),
+                new AHScraper(),
+                new CoopScraper(),
+            };
         }
 
-        public List<Beer> start()
+        public void startFindingFirstBeers()
         {
-            //add the fake data to the database.
-            //this.databaseHandler.store(beers);
-
-            //get all data from the database.
-            //this.beers = this.databaseHandler.get();
-            scrapers.Add(new GallEnGallScraper());
-            scrapers.Add(new JumboScraper());
-            scrapers.Add(new PLUSScraper());
-            scrapers.Add(new AHScraper());
-            scrapers.Add(new CoopScraper());
-            List<Beer> beers = new List<Beer>();
+            List<Beer> beersDB;
             foreach (Scraper scraper in this.scrapers)
             {
-                beers.Concat(scraper.parseHTML());
-                //this.databaseHandler.store(scraper.parseHTML());
+                beersDB = scraper.parseHTML();
+                this.beers = this.beers.Concat(beersDB).ToList();
+                this.databaseHandler.store(beersDB);
             }
-
-            return beers;
         }
 
-        public Scraper[] getScrapers()
+        public List<Beer> getBeers()
         {
-            throw new System.NotImplementedException();
+            Debug.WriteLine(this.beers.Count);
+            return this.beers;
+        }
+
+        public List<Scraper> getScrapers()
+        {
+            return scrapers;
         }
 
         public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker

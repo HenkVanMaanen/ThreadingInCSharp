@@ -93,6 +93,11 @@ namespace SkereBiertjes
         //insert all beers that are in a list into the database
         public bool store(List<Beer> Beers)
         {
+            if(Beers.Count == 0)
+            {
+                return false;
+            }
+
             try
             {
                 //create start of the insert query
@@ -122,7 +127,7 @@ namespace SkereBiertjes
                     db.Open();
                     SqliteCommand insertSql = new SqliteCommand(sCommand.ToString(), db);
                     insertSql.ExecuteReader();
-                   
+
                     db.Close();
                 }
             }

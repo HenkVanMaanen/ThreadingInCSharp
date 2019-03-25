@@ -32,13 +32,11 @@ namespace SkereBiertjes
         private ObservableCollection<string> suggestions;
         private static string SearchIcon = "\uE1A3";
         private static string ErrorIcon = "\uE783";
-        private BeerScraper beerScraper;
         private List<Beer> beers;
 
         public MainPage()
         {
-            suggestions = new ObservableCollection<string>();
-            beerScraper = new BeerScraper();
+            this.suggestions = new ObservableCollection<string>();
             this.InitializeComponent();
         }
 
@@ -94,6 +92,7 @@ namespace SkereBiertjes
         private async void BeerSearchBox_QuerySubmitted(AutoSuggestBox sender,
             AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            Debug.WriteLine(this.beers.Count);
             if (args.ChosenSuggestion == null)
             {
                 progressRing.IsActive = true;
@@ -105,27 +104,7 @@ namespace SkereBiertjes
                 // Start the stopwatch and start getting beers
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
-
-                beers = this.beerScraper.start();
-
-                //List<Beer> beers = new List<Beer>
-                //{
-                //    new Beer("Grolsch", 330, 5, 800, "", "Coop",
-                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                //    new Beer("Heineken", 330, 5, 799, "", "Jumbo",
-                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                //    new Beer("Grolsch", 330, 25, 1699, "", "Jumbo",
-                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                //    new Beer("Grolsch", 330, 25, 1699, "", "GallEnGall",
-                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                //    new Beer("Grolsch", 330, 6, 899, "", "AH",
-                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                //    new Beer("Grolsch", 330, 24, 1099, "1799", "Plus",
-                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                //    new Beer("Grolsch", 330, 24, 1199, "1899", "Jumbo",
-                //        "https://static.ah.nl/image-optimization/static/product/AHI_434d50313932373737_3_LowRes_JPG.JPG?options=399,q80"),
-                //};
-
+              
                 await Task.Delay(1000);
 
                 // Stop stopwatch and get the elapsed time
@@ -139,11 +118,15 @@ namespace SkereBiertjes
                 EmptyStateElements.Visibility = Visibility.Collapsed;
 
                 // Beers found and something has been entered in the SearchBox!
-                if (!string.IsNullOrWhiteSpace(args.QueryText) && beers.Count > 0)
+                Debug.WriteLine("TESTING");
+                Debug.WriteLine(string.IsNullOrWhiteSpace(args.QueryText));
+                Debug.WriteLine(this.beers.Count);
+
+                if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beers.Count > 0)
                 {      
                     // Put beers in a new ArrayList for making up the grid
                     var beerItemsSource = new ArrayList();
-                    foreach (var beer in beers)
+                    foreach (var beer in this.beers)
                     {
                         var description =
                             $"{beer.getBrand()} - {beer.getBottleAmount()} x {(float) beer.getVolume() / 1000}L";
@@ -212,6 +195,16 @@ namespace SkereBiertjes
             Random rnd = new Random();
             int rnd_num = rnd.Next(0, (searchTextArray.Length));
             EmptyStateTextBlock.Text = searchTextArray[rnd_num];
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if(e.Parameter is List<Beer>)
+            {
+                beers = (List<Beer>) e.Parameter;
+                Debug.WriteLine(beers.Count);
+            }
+            base.OnNavigatedTo(e);
         }
     }
 }

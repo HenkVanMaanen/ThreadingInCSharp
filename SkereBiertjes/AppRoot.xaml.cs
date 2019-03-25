@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SkereBiertjes
 {
@@ -24,9 +26,26 @@ namespace SkereBiertjes
     public sealed partial class AppRoot : Page
     {
 
+        private BeerScraper beerScraper;
+        private List<Beer> beers;
+
         public AppRoot()
         {
             this.InitializeComponent();
+
+            this.beers = new List<Beer>();
+            this.beerScraper = new BeerScraper();
+            
+            Task T1 = new Task(() => {
+                beerScraper.startFindingFirstBeers();
+            });
+
+            T1.Start();
+            T1.Wait();
+
+            this.beers = this.beerScraper.getBeers();
+
+            Debug.WriteLine(this.beers.Count);
         }
 
         // Runs when the NavView is loaded
@@ -67,7 +86,7 @@ namespace SkereBiertjes
                 switch(item.Tag.ToString())
                 {
                     case "home":
-                        ContentFrame.Navigate(typeof(MainPage));
+                        ContentFrame.Navigate(typeof(MainPage), this.beers);
                         break;
                     case "filters":
                         ContentFrame.Navigate(typeof(FilterPage));
