@@ -102,7 +102,7 @@ namespace SkereBiertjes
             //parse to usable data
             string name = json["name"].ToString();
             int volume = this.parseNameToVolume(name);
-            int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString()) * 100));
+            int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString())));
             JObject jsonParsed = parseToJson(node.InnerText);
             string discount = parseToDiscount(jsonParsed);
             int bottleAmount = parseToAmountDiscount(jsonParsed);

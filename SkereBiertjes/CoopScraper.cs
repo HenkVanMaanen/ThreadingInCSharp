@@ -7,7 +7,6 @@ using HtmlAgilityPack;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
 
 namespace SkereBiertjes
@@ -71,7 +70,7 @@ namespace SkereBiertjes
         private Beer parseData(JToken json)
         {
             string brand = json["productJson"]["name"].ToString();
-            int priceNormalized = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString()) * 100));
+            int priceNormalized = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString())));
             string discount = "";
             int bottleAmount = parseNameToBottle(brand);
             string jsonText = json["productSubText"].ToString();
@@ -85,7 +84,7 @@ namespace SkereBiertjes
         //create a beer with AlbertHeijn allready in it;
         private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Albert Heijn", url);
+            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Coop", url);
         }
 
         private int parseNameToBottle(string text)

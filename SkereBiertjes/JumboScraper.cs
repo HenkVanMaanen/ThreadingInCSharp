@@ -14,34 +14,34 @@ namespace SkereBiertjes
     public class JumboScraper : Scraper
     {
         private string StandardURL;
+        private string keyword = "bier";
         private List<Beer> beers;
-        
+
         public JumboScraper()
         {
+            StandardURL = @"Data/jumbo.html";
             beers = new List<Beer>();
-            private string keyword = "bier";
-        StandardURL = @"Data/jumbo.html";
         }
 
-    async Task<List<string>> Scraper.getHTML()
-    {
-        var pages = new List<string>();
-
-        using (var httpClient = new HttpClient())
+        async Task<List<string>> Scraper.getHTML()
         {
+            var pages = new List<string>();
 
-
-            for (var p = 0; p < 42; p++)
+            using (var httpClient = new HttpClient())
             {
-                var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + keyword);
-                pages.Add(await response.Content.ReadAsStringAsync());
+
+
+                for (var p = 0; p < 42; p++)
+                {
+                    var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + keyword);
+                    pages.Add(await response.Content.ReadAsStringAsync());
+                }
+
+                return pages;
             }
-
-            return pages;
         }
-    }
 
-    public List<Beer> parseHTML()
+        public List<Beer> parseHTML()
         {
             List<Beer> beers = new List<Beer>();
             //get document
@@ -71,7 +71,7 @@ namespace SkereBiertjes
 
             return beers;
         }
-        
+
         List<Beer> Scraper.getBeers()
         {
             return beers;
@@ -85,13 +85,13 @@ namespace SkereBiertjes
             int priceNormalized = Convert.ToInt32(node.SelectSingleNode(".//input[contains(@id, 'PriceInCents')]").Attributes["value"].Value);
             string discount = this.getDiscount(node);
             string url = this.getURL(node);
-            
+
             return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url); ;
         }
 
         private string getURL(HtmlNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 return "";
             }
@@ -110,12 +110,12 @@ namespace SkereBiertjes
 
         private string getDiscount(HtmlNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 return "";
             }
             node = node.SelectSingleNode(".//div[contains(@class, 'jum-promotion')]");
-            if(node == null)
+            if (node == null)
             {
                 return "";
             }
@@ -134,3 +134,5 @@ namespace SkereBiertjes
         }
     }
 }
+
+

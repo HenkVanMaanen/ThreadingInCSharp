@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace SkereBiertjes
 {
@@ -44,6 +45,7 @@ namespace SkereBiertjes
 
         List<Beer> Scraper.parseHTML()
         {
+            Debug.WriteLine("PARSING");
             List<Beer> beers = new List<Beer>();
 
             var doc = new HtmlDocument();

@@ -102,7 +102,7 @@ namespace SkereBiertjes
                 return Convert.ToInt32(HtmlDiscountPriceNode.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", ""));
             }
 
-            return Convert.ToInt32(Math.Round(Convert.ToDouble(node.Attributes["data-price"].Value) * 100));
+            return Convert.ToInt32(Math.Round(Convert.ToDouble(node.Attributes["data-price"].Value)));
         }
 
         private int parseToAmount(string title)

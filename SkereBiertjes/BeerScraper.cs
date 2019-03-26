@@ -22,7 +22,6 @@ namespace SkereBiertjes
             {
                 new GallEnGallScraper(),
                 new JumboScraper(),
-                new JumboScraper(),
                 new PLUSScraper(),
                 new AHScraper(),
                 new CoopScraper(),
