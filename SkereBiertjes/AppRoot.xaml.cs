@@ -29,12 +29,14 @@ namespace SkereBiertjes
         private BeerScraper beerScraper;
         private List<Beer> beers;
         private DatabaseHandler databaseHandler;
+        private Filter filter;
 
         public AppRoot()
         {
+            this.filter = new Filter("", "", "");
             this.InitializeComponent();
             //create database handler, send this instance to all other classes.
-            this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
+            this.databaseHandler = new DatabaseHandler("SkereBiertjesV6.db");
             this.databaseHandler.delete();
             this.beerScraper = new BeerScraper(databaseHandler);
             
@@ -60,7 +62,7 @@ namespace SkereBiertjes
             }
 
             // Navigate to home (MainPage)
-            ContentFrame.Navigate(typeof(MainPage), this.databaseHandler);
+            ContentFrame.Navigate(typeof(MainPage), this.beerScraper.search("", this.filter));
 
             // Change 'Settings' text to 'Instellingen'
             var settings = (NavigationViewItem)NavView.SettingsItem;
@@ -84,10 +86,11 @@ namespace SkereBiertjes
                 switch (item.Tag.ToString())
                 {
                     case "home":
-                        ContentFrame.Navigate(typeof(MainPage), this.databaseHandler);
+                        ContentFrame.Navigate(typeof(MainPage), this.beerScraper.search("", this.filter));
                         break;
                     case "filters":
-                        ContentFrame.Navigate(typeof(FilterPage));
+                        Debug.WriteLine(this.filter.getBrand());
+                        ContentFrame.Navigate(typeof(FilterPage), this.filter);
                         break;
                     default:
                         ContentFrame.Navigate(typeof(MainPage), this.databaseHandler);

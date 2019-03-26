@@ -33,7 +33,6 @@ namespace SkereBiertjes
         private static string SearchIcon = "\uE1A3";
         private static string ErrorIcon = "\uE783";
         private List<Beer> beers;
-        private DatabaseHandler databaseHandler;
 
         public MainPage()
         {
@@ -105,7 +104,6 @@ namespace SkereBiertjes
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
               
-                await Task.Delay(1000);
 
                 // Stop stopwatch and get the elapsed time
                 stopWatch.Stop();
@@ -119,33 +117,9 @@ namespace SkereBiertjes
 
                 // Beers found and something has been entered in the SearchBox!
                 if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beers.Count > 0)
-                {      
+                {
                     // Put beers in a new ArrayList for making up the grid
-                    var beerItemsSource = new ArrayList();
-                    foreach (var beer in this.beers)
-                    {
-                        var description =
-                            $"{beer.getBrand()} - {beer.getBottleAmount()} x {(float) beer.getVolume() / 1000}L";
-                        var hasReduction = (string.IsNullOrWhiteSpace(beer.getDiscount()))
-                            ? Visibility.Collapsed
-                            : Visibility.Visible;
-                        float.TryParse(beer.getDiscount(), out var discount);
-
-
-                        beerItemsSource.Add(
-                            new
-                            {
-                                BeerDescription = description,
-                                ReductionPriceVisibility = hasReduction,
-                                OriginalPrice = $"€{Convert.ToDecimal(discount) / 100:#.00}",
-                                Price = $"€{Convert.ToDecimal(beer.getNormalizedPrice()) / 100:#.00}",
-                                ImageUrl = beer.getUrl(),
-                                ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
-                            });
-                    }
-
-                    // Show the grid
-                    BeerItemsGrid.Visibility = Visibility.Visible;
+                    this.displayBeersOnScreen();
 
                     // Display search time and amount of results
                     InfoGrid.Opacity = 100d;
@@ -153,8 +127,6 @@ namespace SkereBiertjes
                     var resultsText = (beers.Count == 1) ? "resultaat" : "resultaten";
                     TimingResults.Text = $"{beers.Count} {resultsText} in {(double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000} {secondsText}";
 
-                    // Add the beerItemsSource to the ItemsSource for the ItemsControl in the Xaml
-                    BeerItemsGrid.ItemsSource = beerItemsSource;
                 }
                 // No beers found
                 else if (beers.Count == 0)
@@ -176,6 +148,42 @@ namespace SkereBiertjes
             }
         }
 
+        private void displayBeersOnScreen()
+        {
+
+            EmptyStateElements.Visibility = Visibility.Collapsed;
+
+            var beerItemsSource = new ArrayList();
+            foreach (var beer in this.beers)
+            {
+                var description =
+                    $"{beer.getTitle()} - {beer.getBottleAmount()} x {(float)beer.getVolume() / 1000}L";
+                var hasReduction = (string.IsNullOrWhiteSpace(beer.getDiscount()))
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+                float.TryParse(beer.getDiscount(), out var discount);
+
+
+                beerItemsSource.Add(
+                    new
+                    {
+                        BeerDescription = description,
+                        ReductionPriceVisibility = hasReduction,
+                        OriginalPrice = $"€{Convert.ToDecimal(discount) / 100:#.00}",
+                        Price = $"€{Convert.ToDecimal(beer.getNormalizedPrice()) / 100:#.00}",
+                        ImageUrl = beer.getUrl(),
+                        ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
+                    });
+            }
+
+            // Show the grid
+            BeerItemsGrid.Visibility = Visibility.Visible;
+
+            // Add the beerItemsSource to the ItemsSource for the ItemsControl in the Xaml
+            BeerItemsGrid.ItemsSource = beerItemsSource;
+
+        }
+
         private void EmptyStateTextBlock_Loaded(object sender, RoutedEventArgs e)
         {
             // Als je nog meer onbenullige teksten hebt, kun je die in onderstaande array toevoegen.
@@ -195,10 +203,10 @@ namespace SkereBiertjes
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if(e.Parameter is DatabaseHandler)
+            if(e.Parameter is List<Beer>)
             {
-                this.databaseHandler = (DatabaseHandler) e.Parameter;
-                this.beers = databaseHandler.get();
+                this.beers = (List<Beer>) e.Parameter;
+                this.displayBeersOnScreen();
             }
             base.OnNavigatedTo(e);
         }

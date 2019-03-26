@@ -100,23 +100,45 @@ namespace SkereBiertjes
             JObject json = JObject.Parse(node.Attributes["data-tracking-impression"].Value);
 
             //parse to usable data
-            string name = json["name"].ToString();
-            int volume = this.parseNameToVolume(name);
+            string title = json["name"].ToString();
+            string brand = this.parseToBrand(title);
+            int volume = this.parseNameToVolume(title);
             int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString())));
             JObject jsonParsed = parseToJson(node.InnerText);
             string discount = parseToDiscount(jsonParsed);
             int bottleAmount = parseToAmountDiscount(jsonParsed);
 
             //create beer
-            Beer beer = CreateBeer(name, volume, bottleAmount, price, discount, ImageURL);
+            Beer beer = CreateBeer(brand, title, volume, bottleAmount, price, discount, ImageURL);
 
             return beer;
         }
 
         //create a beer with Gall&Gall allready in it;
-        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Gall&Gall", url);
+            return new Beer(brand, title, volume, bottleAmount, priceNormalized, discount, "Gall en Gall", url);
+        }
+
+        private string parseToBrand(string title)
+        {
+            List<string> brands = new List<string>{
+                "Grolsch",
+                "Heineken",
+                "Amstel",
+                "Bavaria",
+                "Jupiler",
+            };
+            
+            foreach(string brand in brands)
+            {
+                if (title.ToLower().Contains(brand.ToLower()))
+                {
+                    return brand;
+                }
+            }
+
+            return "";
         }
 
         //bc volume is only accisble in name, parse name to get volume in ml

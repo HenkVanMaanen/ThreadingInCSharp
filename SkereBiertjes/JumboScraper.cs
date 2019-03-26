@@ -79,14 +79,36 @@ namespace SkereBiertjes
 
         private Beer parseData(HtmlNode node)
         {
-            string brand = node.SelectSingleNode(".//a[contains(@data-jum-action, 'quickView')]").InnerHtml;
+            string title = node.SelectSingleNode(".//a[contains(@data-jum-action, 'quickView')]").InnerHtml;
+            string brand = this.parseToBrand(title);
             int volume = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[2]) * 10;
             int bottleAmount = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[0]); ;
             int priceNormalized = Convert.ToInt32(node.SelectSingleNode(".//input[contains(@id, 'PriceInCents')]").Attributes["value"].Value);
             string discount = this.getDiscount(node);
             string url = this.getURL(node);
 
-            return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url); ;
+            return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url); ;
+        }
+
+        private string parseToBrand(string title)
+        {
+            List<string> brands = new List<string>{
+                "Grolsch",
+                "Heineken",
+                "Amstel",
+                "Bavaria",
+                "Jupiler",
+            };
+
+            foreach (string brand in brands)
+            {
+                if (title.ToLower().Contains(brand.ToLower()))
+                {
+                    return brand;
+                }
+            }
+
+            return "";
         }
 
         private string getURL(HtmlNode node)
@@ -128,9 +150,9 @@ namespace SkereBiertjes
         }
 
         //create a beer with jumbo allready in it;
-        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Jumbo", url);
+            return new Beer(brand, title, volume, bottleAmount, priceNormalized, discount, "Jumbo", url);
         }
     }
 }

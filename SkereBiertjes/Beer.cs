@@ -9,6 +9,7 @@ namespace SkereBiertjes
     public class Beer
     {
         private string brand;
+        private string title;
         private int volume;
         private int amountBottles;
         private string shop;
@@ -16,9 +17,10 @@ namespace SkereBiertjes
         private string discount;
         private string url;
 
-        public Beer(string brand, int volume, int amountBottles, int priceNormalized, string discount, string shop, string url)
+        public Beer(string brand, string title, int volume, int amountBottles, int priceNormalized, string discount, string shop, string url)
         {
             this.brand = brand;
+            this.title = title;
             this.volume = volume;
             this.amountBottles = amountBottles;
             this.shop = shop;
@@ -30,6 +32,11 @@ namespace SkereBiertjes
         public string getBrand()
         {
             return this.brand.Replace("'", "");
+        }
+
+        public string getTitle()
+        {
+            return this.title.Replace("'", "");
         }
 
         public int getVolume()
@@ -67,6 +74,7 @@ namespace SkereBiertjes
             if (debug == true)
             {
                 Debug.WriteLine("Brand: " + this.brand);
+                Debug.WriteLine("Title: " + this.title);
                 Debug.WriteLine("Volume: " + this.volume);
                 Debug.WriteLine("Amount: " + this.amountBottles);
                 Debug.WriteLine("shop: " + this.shop);

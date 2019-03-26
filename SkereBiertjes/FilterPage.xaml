@@ -21,21 +21,21 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <ComboBox SelectionChanged="ShopComboBox_SelectionChanged" Grid.Row="0" Header="Winkel" PlaceholderText="Selecteer een winkel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <ComboBox x:Name="ShopComboBox" SelectionChanged="ShopComboBox_SelectionChanged" Grid.Row="0" Header="Winkel" PlaceholderText="Selecteer een winkel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <x:String>Albert Heijn</x:String>
                 <x:String>Jumbo</x:String>
                 <x:String>Plus</x:String>
                 <x:String>Gall en Gall</x:String>
             </ComboBox>
             <Border Grid.Row="1" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
-            <ComboBox SelectionChanged="BrandComboBox_SelectionChanged" Grid.Row="2" Header="Merk" Margin="0,25,0,0" PlaceholderText="Selecteer je favoriete merk" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <ComboBox x:Name="BrandComboBox" SelectionChanged="BrandComboBox_SelectionChanged" Grid.Row="2" Header="Merk" Margin="0,25,0,0" PlaceholderText="Selecteer je favoriete merk" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <x:String>Grolsch</x:String>
                 <x:String>Amstel</x:String>
                 <x:String>Bavaria</x:String>
                 <x:String>Jupiler</x:String>
             </ComboBox>
             <Border Grid.Row="3" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
-            <ComboBox SelectionChanged="TypeComboBox_SelectionChanged" Grid.Row="4" Header="Type" Margin="0,25,0,0" PlaceholderText="Kratjes? Blikjes? Zeg het maar!" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <ComboBox x:Name="TypeComboBox" SelectionChanged="TypeComboBox_SelectionChanged" Grid.Row="4" Header="Type" Margin="0,25,0,0" PlaceholderText="Kratjes? Blikjes? Zeg het maar!" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <x:String>Kratjes</x:String>
                 <x:String>Blikjes</x:String>
                 <x:String>Flesje</x:String>

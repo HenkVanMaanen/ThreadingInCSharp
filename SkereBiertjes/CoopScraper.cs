@@ -69,24 +69,46 @@ namespace SkereBiertjes
         //parse the article node to a beer
         private Beer parseData(JToken json)
         {
-            string brand = json["productJson"]["name"].ToString();
+            string title = json["productJson"]["name"].ToString();
+            string brand = this.parseToBrand(title);
             int priceNormalized = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString())));
             string discount = "";
-            int bottleAmount = parseNameToBottle(brand);
+            int bottleAmount = parseNameToBottle(title);
             string jsonText = json["productSubText"].ToString();
             string txt = jsonText.Remove(jsonText.Length - 3, 3);
             int volume = Convert.ToInt32(Math.Round(Convert.ToDouble(txt))) / bottleAmount;
             string url = json["image540"].ToString();
 
-            return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url);
+            return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }
 
         //create a beer with AlbertHeijn allready in it;
-        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Coop", url);
+            return new Beer(brand, title, volume, bottleAmount, priceNormalized, discount, "Coop", url);
         }
+        
+        private string parseToBrand(string title)
+        {
+            List<string> brands = new List<string>{
+                "Grolsch",
+                "Heineken",
+                "Amstel",
+                "Bavaria",
+                "Jupiler",
+            };
 
+            foreach (string brand in brands)
+            {
+                if (title.ToLower().Contains(brand.ToLower()))
+                {
+                    return brand;
+                }
+            }
+
+            return "";
+        }
+        
         private int parseNameToBottle(string text)
         {
             if (text == "")

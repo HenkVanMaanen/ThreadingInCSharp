@@ -77,16 +77,38 @@ namespace SkereBiertjes
         //parse the article node to a beer
         private Beer parseData(JToken json)
         {
-            string brand = json["title"].ToString();
+            string title = json["title"].ToString();
+            string brand = this.parseToBrand(title);
             int volume = this.parseNameToVolume(json["unitSize"].ToString());
             int priceNormalized = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"]["now"].ToString()) * 100));
             string discount = "";
             int bottleAmount = this.parseNameToBottle(json["unitSize"].ToString());
             string url = json["images"][0]["url"].ToString();
 
-            return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url);
+            return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }
-        
+
+        private string parseToBrand(string title)
+        {
+            List<string> brands = new List<string>{
+                "Grolsch",
+                "Heineken",
+                "Amstel",
+                "Bavaria",
+                "Jupiler",
+            };
+
+            foreach (string brand in brands)
+            {
+                if (title.ToLower().Contains(brand.ToLower()))
+                {
+                    return brand;
+                }
+            }
+
+            return "";
+        }
+
         private int parseNameToBottle(string text)
         {
             if (text == "")
@@ -131,9 +153,9 @@ namespace SkereBiertjes
             return 1;
         }
         //create a beer with AlbertHeijn allready in it;
-        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Albert Heijn", url);
+            return new Beer(brand, title, volume, bottleAmount, priceNormalized, discount, "Albert Heijn", url);
         }
     }
 }

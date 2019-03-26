@@ -145,6 +145,21 @@ namespace SkereBiertjes
             this.type = type;
         }
 
+        public void setBrand(string brand)
+        {
+            this.brand = brand;
+        }
+
+        public void setShop(string shop)
+        {
+            this.shop = shop;
+        }
+
+        public void setType(string type)
+        {
+            this.type = type;
+        }
+
         public string getBrand()
         {
             return brand;

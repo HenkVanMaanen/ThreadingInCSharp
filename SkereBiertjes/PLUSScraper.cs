@@ -78,17 +78,39 @@ namespace SkereBiertjes
         {
             HtmlNode infoNode = node.SelectSingleNode(".//div[contains(@class, 'product-tile__info')]");
             
-            string brand = infoNode.Attributes["data-name"].Value;
-            int bottleAmount = this.parseToAmount(brand);
+            string title = infoNode.Attributes["data-name"].Value;
+            string brand = this.parseToBrand(title);
+            int bottleAmount = this.parseToAmount(title);
             int priceNormalized = this.getPrice(infoNode);  
             string data = node.SelectSingleNode(".//span[contains(@class, 'product-tile__quantity')]").InnerHtml;
             int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
             int volume = totalVolume / bottleAmount;
             string discount = "";
             string url = "https://plus.nl" + node.SelectSingleNode(".//img[contains(@class, 'lazy')]").Attributes["data-src"].Value.Replace("&#47;", "/");
-            return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url);
+            return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }
+        
+        private string parseToBrand(string title)
+        {
+            List<string> brands = new List<string>{
+                "Grolsch",
+                "Heineken",
+                "Amstel",
+                "Bavaria",
+                "Jupiler",
+            };
 
+            foreach (string brand in brands)
+            {
+                if (title.ToLower().Contains(brand.ToLower()))
+                {
+                    return brand;
+                }
+            }
+
+            return "";
+        }
+        
         private int getPrice(HtmlNode node)
         {
             if(node == null)
@@ -129,9 +151,9 @@ namespace SkereBiertjes
             return 1;
         }
         //create a beer with jumbo allready in it;
-        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "PLUS", url);
+            return new Beer(brand, title, volume, bottleAmount, priceNormalized, discount, "Plus", url);
         }
     }
 }
