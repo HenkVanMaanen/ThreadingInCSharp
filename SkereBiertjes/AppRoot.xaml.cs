@@ -90,7 +90,6 @@ namespace SkereBiertjes
                 switch (item.Tag.ToString())
                 {
                     case "home":
-
                         IDictionary<string, Object> data = new Dictionary<string, Object>();
                         data["filter"] = this.filter;
                         data["beerScraper"] = this.beerScraper;
