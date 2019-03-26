@@ -104,7 +104,7 @@ namespace SkereBiertjes
             if (keyword != "")
             {
                 IEnumerable<Beer> searchQuery = from element in b
-                                                where element.getBrand().Contains(keyword)
+                                                where element.getTitle().Contains(keyword)
                                                 select element;
 
                 foreach (Beer beer in searchQuery)

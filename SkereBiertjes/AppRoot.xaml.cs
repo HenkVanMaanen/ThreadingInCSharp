@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Collections;
 
 namespace SkereBiertjes
 {
@@ -27,7 +28,6 @@ namespace SkereBiertjes
     {
 
         private BeerScraper beerScraper;
-        private List<Beer> beers;
         private DatabaseHandler databaseHandler;
         private Filter filter;
 
@@ -62,7 +62,11 @@ namespace SkereBiertjes
             }
 
             // Navigate to home (MainPage)
-            ContentFrame.Navigate(typeof(MainPage), this.beerScraper.search("", this.filter));
+            IDictionary<string, Object> data = new Dictionary<string, Object>();
+            data["filter"] = this.filter;
+            data["beerScraper"] = this.beerScraper;
+
+            ContentFrame.Navigate(typeof(MainPage), data);
 
             // Change 'Settings' text to 'Instellingen'
             var settings = (NavigationViewItem)NavView.SettingsItem;
@@ -86,10 +90,14 @@ namespace SkereBiertjes
                 switch (item.Tag.ToString())
                 {
                     case "home":
-                        ContentFrame.Navigate(typeof(MainPage), this.beerScraper.search("", this.filter));
+
+                        IDictionary<string, Object> data = new Dictionary<string, Object>();
+                        data["filter"] = this.filter;
+                        data["beerScraper"] = this.beerScraper;
+
+                        ContentFrame.Navigate(typeof(MainPage), data);
                         break;
                     case "filters":
-                        Debug.WriteLine(this.filter.getBrand());
                         ContentFrame.Navigate(typeof(FilterPage), this.filter);
                         break;
                     default:

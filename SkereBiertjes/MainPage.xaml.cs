@@ -33,6 +33,8 @@ namespace SkereBiertjes
         private static string SearchIcon = "\uE1A3";
         private static string ErrorIcon = "\uE783";
         private List<Beer> beers;
+        private Filter filter;
+        private BeerScraper beerScraper;
 
         public MainPage()
         {
@@ -99,16 +101,7 @@ namespace SkereBiertjes
                 BeerItemsGrid.Visibility = Visibility.Collapsed;
                 BigIcon.Text = SearchIcon;
                 InfoGrid.Opacity = 0d;
-
-                // Start the stopwatch and start getting beers
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
-              
-
-                // Stop stopwatch and get the elapsed time
-                stopWatch.Stop();
-                TimeSpan ts = stopWatch.Elapsed;
-
+                
                 // Disable progress ring animation
                 progressRing.IsActive = false;
 
@@ -116,20 +109,14 @@ namespace SkereBiertjes
                 EmptyStateElements.Visibility = Visibility.Collapsed;
 
                 // Beers found and something has been entered in the SearchBox!
-                if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beers.Count > 0)
+                if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beerScraper.getBeers().Count > 0)
                 {
                     // Put beers in a new ArrayList for making up the grid
-                    this.displayBeersOnScreen();
-
-                    // Display search time and amount of results
-                    InfoGrid.Opacity = 100d;
-                    var secondsText = ((double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000 == 1d) ? "seconde" : "seconden";
-                    var resultsText = (beers.Count == 1) ? "resultaat" : "resultaten";
-                    TimingResults.Text = $"{beers.Count} {resultsText} in {(double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000} {secondsText}";
+                    this.displayBeersOnScreen(args.QueryText);
 
                 }
                 // No beers found
-                else if (beers.Count == 0)
+                else if (this.beerScraper.getBeers().Count == 0)
                 {
                     BeerItemsGrid.Visibility = Visibility.Collapsed;
                     EmptyStateElements.Visibility = Visibility.Visible;
@@ -148,13 +135,21 @@ namespace SkereBiertjes
             }
         }
 
-        private void displayBeersOnScreen()
+        private void displayBeersOnScreen(string search)
         {
-
+            // Start the stopwatch and start getting beers
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            
+            List<Beer> beers = this.beerScraper.search(search, this.filter);
             EmptyStateElements.Visibility = Visibility.Collapsed;
+            
+            // Stop stopwatch and get the elapsed time
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
 
             var beerItemsSource = new ArrayList();
-            foreach (var beer in this.beers)
+            foreach (var beer in beers)
             {
                 var description =
                     $"{beer.getTitle()} - {beer.getBottleAmount()} x {(float)beer.getVolume() / 1000}L";
@@ -174,6 +169,13 @@ namespace SkereBiertjes
                         ImageUrl = beer.getUrl(),
                         ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
                     });
+
+
+                // Display search time and amount of results
+                InfoGrid.Opacity = 100d;
+                var secondsText = ((double)((ts.Seconds * 1000) + ts.Milliseconds) / 1000 == 1d) ? "seconde" : "seconden";
+                var resultsText = (beers.Count == 1) ? "resultaat" : "resultaten";
+                TimingResults.Text = $"{beers.Count} {resultsText} in {(double)((ts.Seconds * 1000) + ts.Milliseconds) / 1000} {secondsText}";
             }
 
             // Show the grid
@@ -181,7 +183,6 @@ namespace SkereBiertjes
 
             // Add the beerItemsSource to the ItemsSource for the ItemsControl in the Xaml
             BeerItemsGrid.ItemsSource = beerItemsSource;
-
         }
 
         private void EmptyStateTextBlock_Loaded(object sender, RoutedEventArgs e)
@@ -203,10 +204,13 @@ namespace SkereBiertjes
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if(e.Parameter is List<Beer>)
+            if(e.Parameter is IDictionary<string, Object>)
             {
-                this.beers = (List<Beer>) e.Parameter;
-                this.displayBeersOnScreen();
+                IDictionary<string, Object> data = (IDictionary<string, Object>) e.Parameter;
+                this.filter = (Filter) data["filter"];
+                this.beerScraper = (BeerScraper) data["beerScraper"];
+                
+                this.displayBeersOnScreen("");
             }
             base.OnNavigatedTo(e);
         }
