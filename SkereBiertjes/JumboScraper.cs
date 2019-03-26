@@ -19,15 +19,29 @@ namespace SkereBiertjes
         public JumboScraper()
         {
             beers = new List<Beer>();
-            StandardURL = @"Data/jumbo.html";
+            private string keyword = "bier";
+        StandardURL = @"Data/jumbo.html";
         }
 
-        async Task<List<string>> Scraper.getHTML()
+    async Task<List<string>> Scraper.getHTML()
+    {
+        var pages = new List<string>();
+
+        using (var httpClient = new HttpClient())
         {
-            throw new NotImplementedException();
-        }
 
-        public List<Beer> parseHTML()
+
+            for (var p = 0; p < 42; p++)
+            {
+                var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + keyword);
+                pages.Add(await response.Content.ReadAsStringAsync());
+            }
+
+            return pages;
+        }
+    }
+
+    public List<Beer> parseHTML()
         {
             List<Beer> beers = new List<Beer>();
             //get document

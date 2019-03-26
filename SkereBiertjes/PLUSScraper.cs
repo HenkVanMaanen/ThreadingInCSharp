@@ -15,6 +15,7 @@ namespace SkereBiertjes
     public class PLUSScraper : Scraper
     {
         public string StandardURL;
+        private string keyword = "bier";
         private List<Beer> beers;
 
         public PLUSScraper()
@@ -61,7 +62,16 @@ namespace SkereBiertjes
 
         async Task<List<string>> Scraper.getHTML()
         {
-            throw new NotImplementedException();
+            var pages = new List<string>();
+
+            using (var httpClient = new HttpClient())
+            {
+
+                var response = await httpClient.GetAsync("https://www.plus.nl/INTERSHOP/web/WFS/PLUS-website-Site/nl_NL/-/EUR/ViewTWSearch-ProductPaging?PageNumber=1&PageSize=500&SortingAttribute=&tn_cid=333333-10000&tn_q=" + keyword +  "&tn_sort=Sorteeroptie%2520Zoeken&SelectedTabName=solrTabs1");
+                pages.Add(await response.Content.ReadAsStringAsync());
+
+                return pages;
+            }
         }
 
         private Beer parseData(HtmlNode node)

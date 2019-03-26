@@ -13,7 +13,7 @@ namespace SkereBiertjes
     public class GallEnGallScraper : Scraper
     {
         public string StandardURL;
-
+        private string keyword = "bier";
         private List<Beer> beers;
 
         public GallEnGallScraper()
@@ -25,7 +25,20 @@ namespace SkereBiertjes
 
         async Task<List<string>> Scraper.getHTML()
         {
-            return null;
+            var pages = new List<string>();
+
+            using (var httpClient = new HttpClient())
+            {
+                
+
+                for (var p = 1; p < 18; p++)
+                {
+                    var response = await httpClient.GetAsync("https://www.gall.nl/shop/" + keyword + "/?page=" + p);
+                    pages.Add(await response.Content.ReadAsStringAsync());
+                }
+
+                return pages;
+            }
         }
 
 
