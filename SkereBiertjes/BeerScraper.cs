@@ -63,14 +63,26 @@ namespace SkereBiertjes
             if (filter.getBrand() != "")
             {
                 filterQuery = from element in b
-                              where element.getBrand().Contains(filter.getBrand())
+                              where element.getBrand().ToLower().Contains(filter.getBrand().ToLower())
                               select element;
+
+                foreach (Beer beer in filterQuery)
+                {
+                    filtered.Add(beer);
+                }
+                b = filtered;
             }
             if (filter.getShop() != "")
             {
                 filterQuery = from element in b
-                              where element.getShopName().Contains(filter.getShop())
+                              where element.getShopName().ToLower().Contains(filter.getShop().ToLower())
                               select element;
+
+                foreach (Beer beer in filterQuery)
+                {
+                    filtered.Add(beer);
+                }
+                b = filtered;
             }
             if (filter.getType() != "")
             {
@@ -90,10 +102,7 @@ namespace SkereBiertjes
                 filterQuery = from element in b
                               where element.getBottleAmount().Equals(amountOfBottles)
                               select element;
-            }
 
-            if (filterQuery != null)
-            {
                 foreach (Beer beer in filterQuery)
                 {
                     filtered.Add(beer);
