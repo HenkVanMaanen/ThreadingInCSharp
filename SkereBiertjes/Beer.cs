@@ -83,6 +83,5 @@ namespace SkereBiertjes
                 Debug.WriteLine("url: " + this.url);
             }
         }
-        
     }
 }

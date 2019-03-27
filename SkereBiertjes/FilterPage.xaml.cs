@@ -32,7 +32,7 @@ namespace SkereBiertjes
 
             string brand = this.filter.getBrand();
 
-            if(brand != null)
+            if (brand != null)
             {
                 List<string> lstItems = BrandComboBox.Items
                                 .Select(item => item.ToString())
@@ -74,21 +74,44 @@ namespace SkereBiertjes
         private void ShopComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // e.AddedItems[0].ToString(); <-- Get the current selection
-            this.filter.setShop(e.AddedItems[0].ToString());
+            string shop = e.AddedItems[0].ToString();
+            if (shop.ToLower().Contains("geen winkel"))
+            {
+                this.filter.setShop("");
+            }
+            else
+            {
+                this.filter.setShop(shop);
+            }
         }
 
         // Fired when the Brand selection changes
         private void BrandComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.filter.setBrand(e.AddedItems[0].ToString());
-
+            string brand = e.AddedItems[0].ToString();
+            if (brand.ToLower().Contains("geen merk"))
+            {
+                this.filter.setBrand("");
+            }
+            else
+            {
+                this.filter.setBrand(brand);
+            }
         }
 
         // Fired when the Type selection changes
         private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            this.filter.setType(e.AddedItems[0].ToString());
-
+        {            
+            // e.AddedItems[0].ToString(); <-- Get the current selection
+            string type = e.AddedItems[0].ToString();
+            if (type.ToLower().Contains("geen type"))
+            {
+                this.filter.setType("");
+            }
+            else
+            {
+                this.filter.setType(type);
+            }
         }
         
         protected override void OnNavigatedTo(NavigationEventArgs e)
