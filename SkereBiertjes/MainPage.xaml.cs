@@ -171,18 +171,30 @@ namespace SkereBiertjes
                     });
 
 
+            }
+
+
+            if (beers.Count == 0)
+            {
+                BeerItemsGrid.Visibility = Visibility.Collapsed;
+                EmptyStateElements.Visibility = Visibility.Visible;
+
+                BigIcon.Text = ErrorIcon;
+                EmptyStateTextBlock.Text = "We hebben helaas niks kunnen vinden...";
+            } else
+            {
+                // Show the grid
+                BeerItemsGrid.Visibility = Visibility.Visible;
+
+                // Add the beerItemsSource to the ItemsSource for the ItemsControl in the Xaml
+                BeerItemsGrid.ItemsSource = beerItemsSource;
+
                 // Display search time and amount of results
                 InfoGrid.Opacity = 100d;
                 var secondsText = ((double)((ts.Seconds * 1000) + ts.Milliseconds) / 1000 == 1d) ? "seconde" : "seconden";
                 var resultsText = (beers.Count == 1) ? "resultaat" : "resultaten";
                 TimingResults.Text = $"{beers.Count} {resultsText} in {(double)((ts.Seconds * 1000) + ts.Milliseconds) / 1000} {secondsText}";
             }
-
-            // Show the grid
-            BeerItemsGrid.Visibility = Visibility.Visible;
-
-            // Add the beerItemsSource to the ItemsSource for the ItemsControl in the Xaml
-            BeerItemsGrid.ItemsSource = beerItemsSource;
         }
 
         private void EmptyStateTextBlock_Loaded(object sender, RoutedEventArgs e)

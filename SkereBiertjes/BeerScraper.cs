@@ -62,23 +62,40 @@ namespace SkereBiertjes
 
             if (filter.getBrand() != "")
             {
+                filtered.Clear();
                 filterQuery = from element in b
-                              where element.getBrand().Contains(filter.getBrand())
+                              where element.getBrand().ToLower().Contains(filter.getBrand().ToLower())
                               select element;
+
+                foreach (Beer beer in filterQuery)
+                {
+                    filtered.Add(beer);
+                }
+                b.Clear();
+                b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
             }
             if (filter.getShop() != "")
             {
+                filtered.Clear();
                 filterQuery = from element in b
-                              where element.getShopName().Contains(filter.getShop())
+                              where element.getShopName().ToLower().Contains(filter.getShop().ToLower())
                               select element;
+
+                foreach (Beer beer in filterQuery.ToList())
+                {
+                    filtered.Add(beer);
+                }
+                b.Clear();
+                b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
             }
             if (filter.getType() != "")
             {
+                filtered.Clear();
                 int amountOfBottles = 0;
-                if(filter.getType() == "kratjes")
+                if(filter.getType().ToLower() == "kratjes")
                 {
                     amountOfBottles = 24;
-                } else if(filter.getType() == "blikjes")
+                } else if(filter.getType().ToLower() == "sixpack")
                 {
                     amountOfBottles = 6;
                 }
@@ -90,28 +107,28 @@ namespace SkereBiertjes
                 filterQuery = from element in b
                               where element.getBottleAmount().Equals(amountOfBottles)
                               select element;
-            }
 
-            if (filterQuery != null)
-            {
                 foreach (Beer beer in filterQuery)
                 {
                     filtered.Add(beer);
                 }
-                b = filtered;
+                b.Clear();
+                b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
             }
 
             if (keyword != "")
             {
                 IEnumerable<Beer> searchQuery = from element in b
-                                                where element.getTitle().Contains(keyword)
+                                                where element.getTitle().ToLower().Contains(keyword.ToLower())
                                                 select element;
 
                 foreach (Beer beer in searchQuery)
                 {
                     beers.Add(beer);
                 }
-                b = beers;
+                b.Clear();
+                b = beers.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
+
             }
             return b;
         }
