@@ -10,13 +10,12 @@ namespace SkereBiertjes
     {
         private List<Scraper> scrapers;
         private DatabaseHandler databaseHandler;
-        private List<Beer> beers;
+        private int beersCount;
 
         public BeerScraper(DatabaseHandler databaseHandler)
         {
             this.databaseHandler = databaseHandler;
-            this.beers = new List<Beer>();
-
+            this.beersCount = 0;
             //set all scrapers
             this.scrapers = new List<Scraper>
             {
@@ -30,19 +29,19 @@ namespace SkereBiertjes
 
         public void startFindingFirstBeers()
         {
+            this.beersCount = 0;
             List<Beer> beersDB;
             foreach (Scraper scraper in this.scrapers)
             {
                 beersDB = scraper.parseHTML();
-                this.beers = this.beers.Concat(beersDB).ToList();
+                this.beersCount += beersDB.Count;
                 this.databaseHandler.store(beersDB);
             }
         }
 
-        public List<Beer> getBeers()
+        public int getBeersCount()
         {
-            Debug.WriteLine(this.beers.Count);
-            return this.beers;
+            return this.beersCount;
         }
 
         public List<Scraper> getScrapers()
@@ -52,98 +51,22 @@ namespace SkereBiertjes
 
         public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker
         {
-            List<Beer> b = new List<Beer>();
-            List<Beer> filtered = new List<Beer>();
             List<Beer> beers = new List<Beer>();
 
-            b = this.databaseHandler.get();
+            beers = this.databaseHandler.get();
+            
+            IDictionary<string, Object> typeFilter = new Dictionary<string, Object>();
+            typeFilter["kratjes"] = 24;
+            typeFilter["sixpack"] = 6;
+            typeFilter["losse flesje"] = 1;
 
-            IEnumerable<Beer> filterQuery = null;
+            beers = beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
+                            .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
+                            .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
+                            .OrderBy(beer => beer.getNormalizedPrice()).ToList();
 
-            if (filter.getBrand() != "")
-            {
-                filtered.Clear();
-                filterQuery = from element in b
-                              where element.getBrand().ToLower().Contains(filter.getBrand().ToLower())
-                              select element;
-
-                foreach (Beer beer in filterQuery)
-                {
-                    filtered.Add(beer);
-                }
-                b.Clear();
-                b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
-            }
-            if (filter.getShop() != "")
-            {
-                filtered.Clear();
-                filterQuery = from element in b
-                              where element.getShopName().ToLower().Contains(filter.getShop().ToLower())
-                              select element;
-
-                foreach (Beer beer in filterQuery.ToList())
-                {
-                    filtered.Add(beer);
-                }
-                b.Clear();
-                b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
-            }
-            if (filter.getType() != "")
-            {
-                filtered.Clear();
-                int amountOfBottles = 0;
-                if(filter.getType().ToLower() == "kratjes")
-                {
-                    amountOfBottles = 24;
-                } else if(filter.getType().ToLower() == "sixpack")
-                {
-                    amountOfBottles = 6;
-                }
-                else
-                {
-                    amountOfBottles = 1;
-                }
-
-                filterQuery = from element in b
-                              where element.getBottleAmount().Equals(amountOfBottles)
-                              select element;
-
-                foreach (Beer beer in filterQuery)
-                {
-                    filtered.Add(beer);
-                }
-                b.Clear();
-                b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
-            }
-
-            if (keyword != "")
-            {
-                IEnumerable<Beer> searchQuery = from element in b
-                                                where element.getTitle().ToLower().Contains(keyword.ToLower())
-                                                select element;
-
-                foreach (Beer beer in searchQuery)
-                {
-                    beers.Add(beer);
-                }
-                b.Clear();
-                b = beers.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
-
-            }
-
-            filterQuery =   from element in b
-                            orderby element.getNormalizedPrice() ascending
-                            select element;
-
-            filtered.Clear();
-            foreach (Beer beer in filterQuery)
-            {
-                filtered.Add(beer);
-            }
-            b.Clear();
-            b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
-
-            return b;
+            return beers;
+            
         }
 
         async public void getData()

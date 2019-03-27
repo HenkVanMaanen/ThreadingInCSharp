@@ -109,14 +109,14 @@ namespace SkereBiertjes
                 EmptyStateElements.Visibility = Visibility.Collapsed;
 
                 // Beers found and something has been entered in the SearchBox!
-                if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beerScraper.getBeers().Count > 0)
+                if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beerScraper.getBeersCount() > 0)
                 {
                     // Put beers in a new ArrayList for making up the grid
                     this.displayBeersOnScreen(args.QueryText);
 
                 }
                 // No beers found
-                else if (this.beerScraper.getBeers().Count == 0)
+                else if (this.beerScraper.getBeersCount() == 0)
                 {
                     BeerItemsGrid.Visibility = Visibility.Collapsed;
                     EmptyStateElements.Visibility = Visibility.Visible;
