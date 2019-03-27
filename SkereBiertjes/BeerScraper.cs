@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -130,6 +130,19 @@ namespace SkereBiertjes
                 b = beers.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
 
             }
+
+            filterQuery =   from element in b
+                            orderby element.getNormalizedPrice() ascending
+                            select element;
+
+            filtered.Clear();
+            foreach (Beer beer in filterQuery)
+            {
+                filtered.Add(beer);
+            }
+            b.Clear();
+            b = filtered.ConvertAll(beer => new Beer(beer.getBrand(), beer.getTitle(), beer.getVolume(), beer.getBottleAmount(), beer.getNormalizedPrice(), beer.getDiscount(), beer.getShopName(), beer.getUrl()));
+
             return b;
         }
 
