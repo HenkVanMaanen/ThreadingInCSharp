@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using Windows.Storage;
 
 namespace SkereBiertjes
 {
     public class BeerScraper
     {
+        private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         private List<Scraper> scrapers;
         private DatabaseHandler databaseHandler;
         private int beersCount;
@@ -25,6 +27,7 @@ namespace SkereBiertjes
                 new AHScraper(),
                 new CoopScraper(),
             };
+
         }
 
         public void startFindingFirstBeers()
@@ -60,10 +63,19 @@ namespace SkereBiertjes
             typeFilter["sixpack"] = 6;
             typeFilter["losse flesje"] = 1;
 
-            beers = beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
-                            .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
-                            .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
-                            .OrderBy(beer => beer.getNormalizedPrice()).ToList();
+            if (localSettings.Values["multithreading_enabled"].ToString() == "True")
+            {
+                beers =    beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
+                                .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
+                                .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
+                                .OrderBy(beer => beer.getNormalizedPrice()).AsParallel().ToList();
+            } else
+            {
+                beers = beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
+                                .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
+                                .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
+                                .OrderBy(beer => beer.getNormalizedPrice()).ToList();
+            }
 
             return beers;
             

@@ -45,7 +45,6 @@ namespace SkereBiertjes
 
         List<Beer> Scraper.parseHTML()
         {
-            Debug.WriteLine("PARSING");
             List<Beer> beers = new List<Beer>();
 
             var doc = new HtmlDocument();

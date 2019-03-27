@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Collections;
+using Windows.Storage;
 
 namespace SkereBiertjes
 {
@@ -30,11 +31,13 @@ namespace SkereBiertjes
         private BeerScraper beerScraper;
         private DatabaseHandler databaseHandler;
         private Filter filter;
+        private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
         public AppRoot()
         {
-            this.filter = new Filter("", "", "");
             this.InitializeComponent();
+            this.filter = new Filter("", "", "");
+            localSettings.Values["multithreading_enabled"] = true;
             //create database handler, send this instance to all other classes.
             this.databaseHandler = new DatabaseHandler("SkereBiertjesV6.db");
             this.databaseHandler.delete();
