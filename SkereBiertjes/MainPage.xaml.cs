@@ -164,8 +164,8 @@ namespace SkereBiertjes
                     {
                         BeerDescription = description,
                         ReductionPriceVisibility = hasReduction,
-                        OriginalPrice = $"€{Convert.ToDecimal(discount) / 100:#.00}",
-                        Price = $"€{Convert.ToDecimal(beer.getNormalizedPrice()) / 100:#.00}",
+                        OriginalPrice = $"€ {String.Format("{0:0.00}", Convert.ToDecimal(discount) / 100)}",
+                        Price = $"€ {String.Format("{0:0.00}", Convert.ToDecimal(beer.getNormalizedPrice()) / 100)}",
                         ImageUrl = beer.getUrl(),
                         ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
                     });
