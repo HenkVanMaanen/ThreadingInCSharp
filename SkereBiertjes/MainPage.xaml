@@ -44,11 +44,15 @@
                     <DataTemplate>
                         <!-- One result -->
                         <Grid>
-                            <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="0,12,0,0"
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="0,8,0,0"
                                        Text="{Binding BeerDescription}"
                                        TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#000000" FontSize="14" Canvas.ZIndex="2" />
 
-                            <Grid Grid.Row="1" Margin="0,12,0,12">
+                            <Grid Grid.Row="1" Margin="0,8,0,8">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>

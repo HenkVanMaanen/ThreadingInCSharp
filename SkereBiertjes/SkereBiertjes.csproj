@@ -151,12 +151,12 @@
     <None Include="SkereBiertjes_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\shop\ah.png" />
     <Content Include="Assets\BadgeLogo.scale-100.png" />
     <Content Include="Assets\BadgeLogo.scale-125.png" />
     <Content Include="Assets\BadgeLogo.scale-150.png" />
     <Content Include="Assets\BadgeLogo.scale-200.png" />
     <Content Include="Assets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\shop\albertheijn.png" />
     <Content Include="Assets\shop\coop.png" />
     <Content Include="Assets\shop\gallengall.png" />
     <Content Include="Assets\shop\jumbo.png" />
