@@ -24,34 +24,38 @@ namespace SkereBiertjes
             beers = new List<Beer>();
         }
 
-        List<Beer> Scraper.parseHTML()
+        async Task<List<Beer>> Scraper.parseHTML()
         {
             List<Beer> beers = new List<Beer>();
-            //get document
-            var doc = new HtmlDocument();
-            doc.OptionFixNestedTags = true;
-            doc.Load(StandardURL);
+            var pages = await getHTML();
 
-            var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'product-list-block')]");
-
-            if (nodes == null)
+            foreach (string page in pages)
             {
-                Debug.WriteLine("no nodes selected");
-                return null;
-            }
+                //get document
+                var doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(page);
 
-            foreach (var node in nodes)
-            {
-                if (node != null)
+                var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'product-list-block')]");
+
+                if (nodes == null)
                 {
-                    Beer beer = this.parseData(node);
+                    Debug.WriteLine("no nodes selected");
+                    return null;
+                }
 
-                    beers.Add(beer);
+                foreach (var node in nodes)
+                {
+                    if (node != null)
+                    {
+                        Beer beer = this.parseData(node);
 
-                    beer.printInfo();
+                        beers.Add(beer);
+
+                        beer.printInfo();
+                    }
                 }
             }
-
             return beers;
         }
 
@@ -60,7 +64,7 @@ namespace SkereBiertjes
             throw new NotImplementedException();
         }
 
-        async Task<List<string>> Scraper.getHTML()
+        async Task<List<string>> getHTML()
         {
             var pages = new List<string>();
 
@@ -81,7 +85,16 @@ namespace SkereBiertjes
             string title = infoNode.Attributes["data-name"].Value;
             string brand = this.parseToBrand(title);
             int bottleAmount = this.parseToAmount(title);
-            int priceNormalized = this.getPrice(infoNode);  
+
+            int priceNormalized;
+            try
+            {
+                priceNormalized = this.getPrice(infoNode);
+            } catch
+            {
+                priceNormalized = 0;
+            }
+
             string data = node.SelectSingleNode(".//span[contains(@class, 'product-tile__quantity')]").InnerHtml;
             int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
             int volume = totalVolume / bottleAmount;

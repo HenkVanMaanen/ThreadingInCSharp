@@ -23,7 +23,7 @@ namespace SkereBiertjes
             StandardURL = @"Data/gall&gall.html";
         }
 
-        async Task<List<string>> Scraper.getHTML()
+        async Task<List<string>> getHTML()
         {
             var pages = new List<string>();
 
@@ -42,39 +42,45 @@ namespace SkereBiertjes
         }
 
 
-        List<Beer> Scraper.parseHTML()
+        async Task<List<Beer>> Scraper.parseHTML()
         {
             List<Beer> beers = new List<Beer>();
             //get document
-            var doc = new HtmlDocument();
-            doc.OptionFixNestedTags = true;
-            doc.Load(StandardURL);
+            List<string> pages = await getHTML();
 
-            //select all articles
-            var nodes = doc.DocumentNode.SelectNodes("//article[contains(@class,'product-block')]");
-
-            //check if nodes are not null
-            if (nodes == null)
+            foreach (string page in pages)
             {
-                Debug.WriteLine("No nodes selected");
-                return null;
-            }
 
-            //loop over all articles
-            foreach (var node in nodes)
-            {
-                //if node is null skip it
-                if (node != null)
+                var doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(page);
+
+                //select all articles
+                var nodes = doc.DocumentNode.SelectNodes("//article[contains(@class,'product-block')]");
+                //check if nodes are not null
+                if (nodes == null)
                 {
-                    //parse data from node
-                    Beer beer = this.parseData(node);
+                    Debug.WriteLine("No nodes selected");
+                    return null;
+                }
 
-                    beers.Add(beer);
+                //loop over all articles
+                foreach (var node in nodes)
+                {
+                    //if node is null skip it
+                    if (node != null)
+                    {
+                        //parse data from node
+                        Beer beer = this.parseData(node);
 
-                    //print info from beer
-                    beer.printInfo();
+                        beers.Add(beer);
+
+                        //print info from beer
+                        beer.printInfo();
+                    }
                 }
             }
+            
             return beers;
         }
 
@@ -89,7 +95,6 @@ namespace SkereBiertjes
             //get the node where the image is
             HtmlNodeCollection imageNode = node.SelectNodes(".//img[contains(@itemprop,'image')]");
             string ImageURL = "";
-
             //check if is not empty
             if (imageNode != null)
             {
@@ -104,9 +109,22 @@ namespace SkereBiertjes
             string brand = this.parseToBrand(title);
             int volume = this.parseNameToVolume(title);
             int price = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"].ToString())));
-            JObject jsonParsed = parseToJson(node.InnerText);
-            string discount = parseToDiscount(jsonParsed);
-            int bottleAmount = parseToAmountDiscount(jsonParsed);
+
+            JObject jsonParsed;
+            string discount;
+            int bottleAmount;
+
+            try
+            {
+                jsonParsed = parseToJson(node.InnerText);
+                discount = parseToDiscount(jsonParsed);
+                bottleAmount = parseToAmountDiscount(jsonParsed);
+            }
+            catch
+            {
+                discount = "";
+                bottleAmount = 1;
+            }
 
             //create beer
             Beer beer = CreateBeer(brand, title, volume, bottleAmount, price, discount, ImageURL);
@@ -144,7 +162,8 @@ namespace SkereBiertjes
         //bc volume is only accisble in name, parse name to get volume in ml
         private int parseNameToVolume(string title)
         {
-            if(title == "")
+            Debug.WriteLine(title);
+            if (title == "")
             {
                 return -1;
             }
@@ -156,7 +175,16 @@ namespace SkereBiertjes
             {
                 string word = words[words.Length - 1];
                 word = word.Remove(word.Length - 2, 2);
-                return Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10)); 
+                Int32 r;
+                try
+                {
+                    r = Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10));
+                }
+                catch
+                {
+                    return -1;
+                }
+                return r; 
             }
             return -1;
         }

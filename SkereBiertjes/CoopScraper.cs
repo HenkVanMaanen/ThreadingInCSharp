@@ -24,7 +24,7 @@ namespace SkereBiertjes
         }
 
         
-        async Task<List<string>> Scraper.getHTML()
+        async Task<List<string>> getHTML()
         {
             var pages = new List<string>();
 
@@ -38,26 +38,29 @@ namespace SkereBiertjes
             }
         }
 
-        List<Beer> Scraper.parseHTML()
+        async Task<List<Beer>> Scraper.parseHTML()
         {
             List<Beer> beers = new List<Beer>();
+            var pages = await getHTML();
 
-            var doc = new HtmlDocument();
-            doc.OptionFixNestedTags = true;
-            doc.Load(StandardURL);
-
-            JArray json = JArray.Parse(doc.DocumentNode.InnerHtml);
-
-            foreach (JToken product in json)
+            foreach (string page in pages)
             {
-                Beer beer = this.parseData(product);
+                var doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(page);
 
-                beers.Add(beer);
-                this.beers.Add(beer);
-                //print info from beer
-                beer.printInfo();
+                JArray json = JArray.Parse(doc.DocumentNode.InnerHtml);
+
+                foreach (JToken product in json)
+                {
+                    Beer beer = this.parseData(product);
+
+                    beers.Add(beer);
+                    this.beers.Add(beer);
+                    //print info from beer
+                    beer.printInfo();
+                }
             }
-
             return beers;
         }
         
