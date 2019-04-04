@@ -35,7 +35,7 @@
         </Grid>
 
         <ScrollViewer Canvas.ZIndex="9" Margin="24,130,24,0" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="BeerItemsGrid" ItemsSource="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ItemsControl x:Name="BeerItemsGrid" ItemsSource="{x:Bind beerItems}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                     </ItemsPanelTemplate>

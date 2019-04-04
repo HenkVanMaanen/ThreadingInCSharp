@@ -94,6 +94,7 @@ namespace SkereBiertjes
             {
                 priceNormalized = 0;
             }
+
             string data = node.SelectSingleNode(".//span[contains(@class, 'product-tile__quantity')]").InnerHtml;
             int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
             int volume = totalVolume / bottleAmount;
