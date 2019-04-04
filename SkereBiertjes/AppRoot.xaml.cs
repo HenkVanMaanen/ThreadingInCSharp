@@ -48,7 +48,6 @@ namespace SkereBiertjes
             });
 
             T1.Start();
-            T1.Wait();
         }
 
         // Runs when the NavView is loaded

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using Windows.Storage;
+using System.Threading.Tasks;
 
 namespace SkereBiertjes
 {
@@ -13,11 +14,13 @@ namespace SkereBiertjes
         private List<Scraper> scrapers;
         private DatabaseHandler databaseHandler;
         private int beersCount;
+        private bool doneSearching;
 
         public BeerScraper(DatabaseHandler databaseHandler)
         {
             this.databaseHandler = databaseHandler;
             this.beersCount = 0;
+            this.doneSearching = false;
             //set all scrapers
             this.scrapers = new List<Scraper>
             {
@@ -32,6 +35,7 @@ namespace SkereBiertjes
 
         public void startFindingFirstBeers()
         {
+            this.doneSearching = false;
             this.beersCount = 0;
             List<Beer> beersDB;
             foreach (Scraper scraper in this.scrapers)
@@ -40,6 +44,12 @@ namespace SkereBiertjes
                 this.beersCount += beersDB.Count;
                 this.databaseHandler.store(beersDB);
             }
+            this.doneSearching = true;
+        }
+
+        public bool isDoneSearching()
+        {
+            return this.doneSearching;
         }
 
         public int getBeersCount()
@@ -54,6 +64,11 @@ namespace SkereBiertjes
 
         public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker
         {
+            while (!this.doneSearching)
+            {
+                Task.Delay(100);
+            }
+
             List<Beer> beers = new List<Beer>();
 
             beers = this.databaseHandler.get();

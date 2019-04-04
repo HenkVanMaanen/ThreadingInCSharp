@@ -38,6 +38,8 @@ namespace SkereBiertjes
         private List<Beer> beers;
         private Filter filter;
         private BeerScraper beerScraper;
+        private ObservableCollection<object> beerItems = new ObservableCollection<object>();
+        public ObservableCollection<object> BeerItems { get { return this.beerItems; } }
 
         public MainPage()
         {
@@ -125,7 +127,7 @@ namespace SkereBiertjes
                 if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beerScraper.getBeersCount() > 0)
                 {
                     // Put beers in a new ArrayList for making up the grid
-                    await displayBeersOnScreenAsync(args.QueryText);
+                    displayBeersOnScreenAsync(args.QueryText);
                 }
                 // No beers found
                 else if (this.beerScraper.getBeersCount() == 0)
@@ -143,14 +145,14 @@ namespace SkereBiertjes
             }
         }
 
-        private async Task displayBeersOnScreenAsync(string search)
+        private void displayBeersOnScreenAsync(string search)
         {
             // Backend stuff is put in the Task below
-            await Task.Run(async () =>
+            Task.Run(() =>
             {
                 List<object> beersGridCollection = new List<object>();
                 beers = this.beerScraper.search(search, this.filter);
-
+                
                 foreach (var beer in beers)
                 {
                     var description =
@@ -160,127 +162,25 @@ namespace SkereBiertjes
                         : Visibility.Visible;
                     float.TryParse(beer.getDiscount(), out var discount);
 
-
-                    beersGridCollection.Add(
-                        new
-                        {
-                            BeerDescription = description,
-                            ReductionPriceVisibility = hasReduction,
-                            OriginalPrice = $"€ {String.Format("{0:0.00}", Convert.ToDecimal(discount) / 100)}",
-                            Price =
+                    Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => beerItems.Add( new
+                    {
+                        BeerDescription = description,
+                        ReductionPriceVisibility = hasReduction,
+                        OriginalPrice = $"€ {String.Format("{0:0.00}", Convert.ToDecimal(discount) / 100)}",
+                        Price =
                                 $"€ {String.Format("{0:0.00}", Convert.ToDecimal(beer.getNormalizedPrice()) / 100)}",
-                            ImageUrl = beer.getUrl(),
-                            ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
-                        });
-
-                    //Debug.WriteLine(beer.getTitle());
+                        ImageUrl = beer.getUrl(),
+                        ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
+                    }));
                 }
 
                 // UI Work is done below
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     BeerItemsGrid.Visibility = Visibility.Visible;
-                    BeerItemsGrid.ItemsSource = beersGridCollection;
                     progressRing.IsActive = false;
                 });
             });
-
-            /*var beerItemsSource = new ArrayList();
-
-            // Start the stopwatch and start getting beers
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            List<Beer> beers = new List<Beer>();
-            try
-            {
-                var getBeersTask = Task<List<Beer>>.Factory.StartNew(() =>
-                {
-                    beers = this.beerScraper.searchAsync(search, this.filter).Result;
-
-                    foreach (var beer in beers)
-                    {
-                        var description =
-                            $"{beer.getTitle()} - {beer.getBottleAmount()} x {(float) beer.getVolume() / 1000}L";
-                        var hasReduction = (string.IsNullOrWhiteSpace(beer.getDiscount()))
-                            ? Visibility.Collapsed
-                            : Visibility.Visible;
-                        float.TryParse(beer.getDiscount(), out var discount);
-
-                        beerItemsSource.Add(
-                            new
-                            {
-                                BeerDescription = description,
-                                ReductionPriceVisibility = hasReduction,
-                                OriginalPrice = $"€ {String.Format("{0:0.00}", Convert.ToDecimal(discount) / 100)}",
-                                Price =
-                                    $"€ {String.Format("{0:0.00}", Convert.ToDecimal(beer.getNormalizedPrice()) / 100)}",
-                                ImageUrl = beer.getUrl(),
-                                ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
-                            });
-                    }
-
-                    return beers;
-                });
-
-                // Continue
-                await getBeersTask.ContinueWith(async t =>
-                {
-                    try
-                    {
-                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                        {
-                            //List<Beer> beers = new List<Beer>();
-                            EmptyStateElements.Visibility = Visibility.Collapsed;
-
-                            if (beers.Count == 0)
-                            {
-                                BeerItemsGrid.Visibility = Visibility.Collapsed;
-                                EmptyStateElements.Visibility = Visibility.Visible;
-
-                                //BigIcon.Text = ErrorIcon;
-                                EmptyStateTextBlock.Text = "We hebben helaas niks kunnen vinden...";
-                                stopWatch.Stop();
-                            }
-                            else
-                            {
-                                // Show the grid
-                                BeerItemsGrid.Visibility = Visibility.Visible;
-
-                                // Add the beerItemsSource to the ItemsSource for the ItemsControl in the Xaml
-                                BeerItemsGrid.ItemsSource = beerItemsSource;
-
-                                // Display search time and amount of results
-                                InfoGrid.Opacity = 100d;
-                                // Stop stopwatch and get the elapsed time
-                                stopWatch.Stop();
-                                TimeSpan ts = stopWatch.Elapsed;
-                                var secondsText = ((double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000 == 1d)
-                                    ? "seconde"
-                                    : "seconden";
-                                var resultsText = (beers.Count == 1) ? "resultaat" : "resultaten";
-                                TimingResults.Text =
-                                    $"{beers.Count} {resultsText} in {(double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000} {secondsText}";
-                            }
-
-                            // Disable progress ring animation
-                            progressRing.IsActive = false;
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.StackTrace);
-                        Debug.WriteLine(ex.Message);
-                        Debug.WriteLine("CAUGHT UI THREAD EXCEPTION");
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.StackTrace);
-                Debug.WriteLine(e.Message);
-                Debug.WriteLine("CAUGHT NORMAL THREAD EXCEPTION");
-            }*/
         }
 
         private void EmptyStateTextBlock_Loaded(object sender, RoutedEventArgs e)
@@ -303,7 +203,6 @@ namespace SkereBiertjes
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             progressRing.IsActive = true;
-
             if (e.Parameter is IDictionary<string, Object>)
             {
                 IDictionary<string, Object> data = (IDictionary<string, Object>) e.Parameter;
@@ -311,11 +210,9 @@ namespace SkereBiertjes
                 this.beerScraper = (BeerScraper) data["beerScraper"];
 
                 uiSearchMode();
-                //var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
-                //await dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                //    () => { displayBeersOnScreen(""); });
-
-                await displayBeersOnScreenAsync("");
+                var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
+                dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                   () => { displayBeersOnScreenAsync(""); });
             }
 
             base.OnNavigatedTo(e);
