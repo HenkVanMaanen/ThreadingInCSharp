@@ -21,11 +21,11 @@ namespace SkereBiertjes
             //set all scrapers
             this.scrapers = new List<Scraper>
             {
-                //new GallEnGallScraper(),
-                //new JumboScraper(),
-                //new PLUSScraper(),
+                new GallEnGallScraper(),
+                new JumboScraper(),
+                new PLUSScraper(),
                 new AHScraper(),
-                //new CoopScraper(),
+                new CoopScraper(),
             };
 
         }
