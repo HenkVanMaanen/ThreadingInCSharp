@@ -21,22 +21,21 @@ namespace SkereBiertjes
             //set all scrapers
             this.scrapers = new List<Scraper>
             {
-                new GallEnGallScraper(),
-                new JumboScraper(),
-                new PLUSScraper(),
+                //new GallEnGallScraper(),
+                //new JumboScraper(),
+                //new PLUSScraper(),
                 new AHScraper(),
-                new CoopScraper(),
+                //new CoopScraper(),
             };
 
         }
 
-        public void startFindingFirstBeers()
+        public async void startFindingFirstBeers()
         {
             this.beersCount = 0;
-            List<Beer> beersDB;
             foreach (Scraper scraper in this.scrapers)
             {
-                beersDB = scraper.parseHTML();
+                List<Beer> beersDB = await scraper.parseHTML();
                 this.beersCount += beersDB.Count;
                 this.databaseHandler.store(beersDB);
             }
@@ -81,16 +80,6 @@ namespace SkereBiertjes
 
             return beers;
             
-        }
-
-        async public void getData()
-        {
-            foreach (Scraper scraper in scrapers) {
-                var w = System.Diagnostics.Stopwatch.StartNew();
-                List<string> pages = await scraper.getHTML();
-                w.Stop();
-                Debug.WriteLine(w.ElapsedMilliseconds);
-            }
         }
 
         public int timeToScrape()

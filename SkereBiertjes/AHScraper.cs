@@ -25,7 +25,7 @@ namespace SkereBiertjes
         }
 
 
-        async Task<List<string>> Scraper.getHTML()
+        async Task<List<string>> getHTML()
         {
             var pages = new List<string>();
 
@@ -43,28 +43,38 @@ namespace SkereBiertjes
             }
         }
 
-        List<Beer> Scraper.parseHTML()
+        async Task<List<Beer>> Scraper.parseHTML()
         {
             List<Beer> beers = new List<Beer>();
+            var pages = await getHTML();
 
-            var doc = new HtmlDocument();
-            doc.OptionFixNestedTags = true;
-            doc.Load(StandardURL);
-
-            JObject json = JObject.Parse(doc.DocumentNode.InnerHtml);
-
-            JToken jsonProducts = json.SelectToken("products");
-
-            foreach(JToken product in jsonProducts)
+            foreach (string page in pages)
             {
-                Beer beer = this.parseData(product);
+                var doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(page);
 
-                beers.Add(beer);
+                JToken jsonProducts = null;
+                try
+                {
+                    JObject json = JObject.Parse(doc.DocumentNode.InnerHtml);
 
-                //print info from beer
-                beer.printInfo();
+                    jsonProducts = json.SelectToken("products");
+                } catch
+                {
+                    break;
+                }
+
+                foreach (JToken product in jsonProducts)
+                {
+                    Beer beer = this.parseData(product);
+
+                    beers.Add(beer);
+
+                    //print info from beer
+                    beer.printInfo();
+                }
             }
-
             return beers;
         }
         
@@ -82,7 +92,15 @@ namespace SkereBiertjes
             int priceNormalized = Convert.ToInt32(Math.Round(Convert.ToDouble(json["price"]["now"].ToString()) * 100));
             string discount = "";
             int bottleAmount = this.parseNameToBottle(json["unitSize"].ToString());
-            string url = json["images"][0]["url"].ToString();
+
+            string url;
+            try
+            {
+                url = json["images"][0]["url"].ToString();
+            } catch
+            {
+                url = "";
+            }
 
             return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }

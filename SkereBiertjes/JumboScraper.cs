@@ -23,7 +23,7 @@ namespace SkereBiertjes
             beers = new List<Beer>();
         }
 
-        async Task<List<string>> Scraper.getHTML()
+        async Task<List<string>> getHTML()
         {
             var pages = new List<string>();
 
@@ -31,44 +31,50 @@ namespace SkereBiertjes
             {
 
 
-                for (var p = 0; p < 42; p++)
+                for (var p = 0; p < 4; p++)
                 {
                     var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + keyword);
-                    pages.Add(await response.Content.ReadAsStringAsync());
+                    string c = await response.Content.ReadAsStringAsync();
+                    pages.Add(c);
+                   
                 }
 
                 return pages;
             }
         }
 
-        public List<Beer> parseHTML()
+        async Task<List<Beer>> Scraper.parseHTML()
         {
             List<Beer> beers = new List<Beer>();
-            //get document
-            var doc = new HtmlDocument();
-            doc.OptionFixNestedTags = true;
-            doc.Load(StandardURL);
+            var pages = await getHTML();
 
-            var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'jum-item-product')]");
-
-            if (nodes == null)
+            foreach (string page in pages)
             {
-                Debug.WriteLine("no nodes selected");
-                return null;
-            }
+                //get document
+                var doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(page);
 
-            foreach (var node in nodes)
-            {
-                if (node != null)
+                var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'jum-item-product')]");
+
+                if (nodes == null)
                 {
-                    Beer beer = this.parseData(node);
+                    Debug.WriteLine("no nodes selected");
+                    break;
+                }
 
-                    beers.Add(beer);
+                foreach (var node in nodes)
+                {
+                    if (node != null)
+                    {
+                        Beer beer = this.parseData(node);
 
-                    beer.printInfo();
+                        beers.Add(beer);
+
+                        beer.printInfo();
+                    }
                 }
             }
-
             return beers;
         }
 
@@ -81,9 +87,34 @@ namespace SkereBiertjes
         {
             string title = node.SelectSingleNode(".//a[contains(@data-jum-action, 'quickView')]").InnerHtml;
             string brand = this.parseToBrand(title);
-            int volume = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[2]) * 10;
-            int bottleAmount = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[0]); ;
-            int priceNormalized = Convert.ToInt32(node.SelectSingleNode(".//input[contains(@id, 'PriceInCents')]").Attributes["value"].Value);
+
+            int volume;
+            try
+            {
+                volume = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[2]) * 10;
+            } catch
+            {
+                volume = 0;
+            }
+
+            int bottleAmount;
+            try
+            {
+                bottleAmount = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[0]); ;
+            } catch
+            {
+                bottleAmount = 0;
+            }
+
+            int priceNormalized;
+            try
+            {
+                priceNormalized = Convert.ToInt32(node.SelectSingleNode(".//input[contains(@id, 'PriceInCents')]").Attributes["value"].Value);
+            } catch
+            {
+                priceNormalized = 0;
+            }
+
             string discount = this.getDiscount(node);
             string url = this.getURL(node);
 
