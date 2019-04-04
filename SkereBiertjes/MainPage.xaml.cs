@@ -43,8 +43,8 @@ namespace SkereBiertjes
 
         public MainPage()
         {
-            this.suggestions = new ObservableCollection<string>();
             this.InitializeComponent();
+            this.suggestions = new ObservableCollection<string>();
             BigIcon.Text = SearchIcon;
         }
 

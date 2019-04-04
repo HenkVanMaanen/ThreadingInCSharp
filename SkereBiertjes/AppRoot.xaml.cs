@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,13 +62,6 @@ namespace SkereBiertjes
                     break;
                 }
             }
-
-            // Navigate to home (MainPage)
-            IDictionary<string, Object> data = new Dictionary<string, Object>();
-            data["filter"] = this.filter;
-            data["beerScraper"] = this.beerScraper;
-
-            ContentFrame.Navigate(typeof(MainPage), data);
 
             // Change 'Settings' text to 'Instellingen'
             var settings = (NavigationViewItem)NavView.SettingsItem;
