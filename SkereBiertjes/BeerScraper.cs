@@ -62,18 +62,20 @@ namespace SkereBiertjes
             typeFilter["kratjes"] = 24;
             typeFilter["sixpack"] = 6;
             typeFilter["losse flesje"] = 1;
-
+            
             if (localSettings.Values["multithreading_enabled"].ToString() == "True")
             {
                 beers =    beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
                                 .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
                                 .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
+                                .Where(beer => keyword == "" || beer.getTitle().ToLower().Contains(keyword.ToLower()))
                                 .OrderBy(beer => beer.getNormalizedPrice()).AsParallel().ToList();
             } else
             {
                 beers = beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
                                 .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
                                 .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
+                                .Where(beer => keyword == "" || beer.getTitle().ToLower().Contains(keyword.ToLower()))
                                 .OrderBy(beer => beer.getNormalizedPrice()).ToList();
             }
 
