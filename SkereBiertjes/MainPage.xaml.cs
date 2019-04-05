@@ -39,6 +39,7 @@ namespace SkereBiertjes
         private Filter filter;
         private BeerScraper beerScraper;
         private ObservableCollection<object> beerItems = new ObservableCollection<object>();
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         public ObservableCollection<object> BeerItems
         {
@@ -109,7 +110,7 @@ namespace SkereBiertjes
         private void uiSearchMode()
         {
             EmptyStateElements.Visibility = Visibility.Collapsed;
-            BeerItemsGrid.Opacity = 15d;
+            BeerItemScrollViewer.Opacity = 0.25d;
             BigIcon.Text = SearchIcon;
             progressRing.IsActive = true;
         }
@@ -120,7 +121,10 @@ namespace SkereBiertjes
         private void uiDoneSearchingResultEmpty()
         {
             EmptyStateElements.Visibility = Visibility.Visible;
-            BeerItemsGrid.Opacity = 0;
+            BeerItemScrollViewer.Opacity = 0;
+            BigIcon.Text = ErrorIcon;
+            EmptyStateTextBlock.Text = "Geen biertjes gevonden...\nProbeer het opnieuw met een andere zoekopdracht!";
+            TimingResults.Text = "Geen resultaten";
             progressRing.IsActive = false;
         }
 
@@ -130,7 +134,7 @@ namespace SkereBiertjes
         private void uiDoneSearchingResultsNotEmpty()
         {
             EmptyStateElements.Visibility = Visibility.Collapsed;
-            BeerItemsGrid.Opacity = 100d;
+            BeerItemScrollViewer.Opacity = 1d;
             progressRing.IsActive = false;
         }
 
@@ -150,19 +154,20 @@ namespace SkereBiertjes
                 // Beers found and something has been entered in the SearchBox!
                 if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beerScraper.getBeersCount() > 0)
                 {
+                    // Submit cancellation for previous tasks so no new Beer Items will be added to the Grid
+                    cancellationTokenSource.Cancel();
+
                     await Dispatcher.RunAsync(CoreDispatcherPriority.High, async () =>
                     {
                         var userInputText = args.QueryText;
-                        Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync(userInputText); });
+
+                        // Reset the token
+                        cancellationTokenSource.Dispose();
+                        cancellationTokenSource = new CancellationTokenSource();
+
+                        Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync(userInputText, cancellationTokenSource.Token); });
                         t1.Start();
                     });
-                }
-                // No beers found
-                else if (this.beerScraper.getBeersCount() == 0)
-                {
-                    BigIcon.Text = ErrorIcon;
-                    EmptyStateTextBlock.Text = "We hebben helaas niks kunnen vinden...";
-                    uiDoneSearchingResultEmpty();
                 }
                 // Nothing entered inside the SearchBox
                 else
@@ -177,10 +182,13 @@ namespace SkereBiertjes
          * This async method creates a row in the Grid for
          * particular beer item. It needs to be executed immediately.
          */
-        private async Task UpdateGridBeer(object row)
+        private async Task UpdateGridBeer(object row, CancellationToken cancellationToken)
         {
             // UI THREAD STUFF
-            await Dispatcher.RunAsync(CoreDispatcherPriority.High, () => { beerItems.Add(row); });
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.High, () => { beerItems.Add(row); });
+            }
         }
 
         /**
@@ -188,7 +196,7 @@ namespace SkereBiertjes
          * It creates several different Tasks so that the UI will
          * not be blocked!
          */
-        private async Task<bool> displayBeersOnScreenAsync(string search)
+        private async Task<bool> displayBeersOnScreenAsync(string search, CancellationToken cancellationToken)
         {
             bool bRet = true;
             List<Task> tasks = new List<Task>();
@@ -205,6 +213,7 @@ namespace SkereBiertjes
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                             () =>
                             {
+                                beerItems.Clear();
                                 TimingResults.Text =
                                     "Verbinden met de webshops en bezig met ophalen van meters bier...\nMoment geduld alstublieft!";
                             });
@@ -219,12 +228,18 @@ namespace SkereBiertjes
                             {
                                 beerItems.Clear();
                                 TimingResults.Text = "Inladen van de opgehaalde biertjes... Dit kan even duren!";
+                                beerSearchBox.IsEnabled = true;
                             });
 
                         // Foreach loop to add every beer to the UI Grid
                         foreach (var beer in beers)
                         {
-                            var description =
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                break;
+                            }
+
+                                var description =
                                 $"{beer.getTitle()} - {beer.getBottleAmount()} x {(float) beer.getVolume() / 1000}L";
                             var hasReduction = (string.IsNullOrWhiteSpace(beer.getDiscount()))
                                 ? Visibility.Collapsed
@@ -242,7 +257,7 @@ namespace SkereBiertjes
                                     $"€ {String.Format("{0:0.00}", Convert.ToDecimal(beer.getNormalizedPrice()) / 100)}",
                                 ImageUrl = beer.getUrl(),
                                 ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
-                            });
+                            }, cancellationTokenSource.Token);
                         }
 
                         // Done searching and filtering beers. Stop the StopWatch!
@@ -255,10 +270,17 @@ namespace SkereBiertjes
                         // UI THREAD STUFF
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
-                            uiDoneSearchingResultsNotEmpty();
+                            if (beers.Count > 0)
+                            {
+                                uiDoneSearchingResultsNotEmpty();
+                            }
+                            else
+                            {
+                                uiDoneSearchingResultEmpty();
+                            }
+
                             TimingResults.Text =
                                 $"{beers.Count} {resultsText} in {(double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000} {secondsText}";
-                            beerSearchBox.IsEnabled = true;
                         });
                     })
                 );
@@ -308,7 +330,7 @@ namespace SkereBiertjes
                 // in a specific thread so UI will not be blocked
 
                 uiSearchMode();
-                Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync(""); });
+                Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync("", cancellationTokenSource.Token); });
                 t1.Start();
             }
 
