@@ -39,12 +39,17 @@ namespace SkereBiertjes
         private Filter filter;
         private BeerScraper beerScraper;
         private ObservableCollection<object> beerItems = new ObservableCollection<object>();
-        public ObservableCollection<object> BeerItems { get { return this.beerItems; } }
+
+        public ObservableCollection<object> BeerItems
+        {
+            get { return this.beerItems; }
+        }
 
         public MainPage()
         {
             this.InitializeComponent();
             this.suggestions = new ObservableCollection<string>();
+            beerSearchBox.IsEnabled = false;
             BigIcon.Text = SearchIcon;
         }
 
@@ -90,32 +95,51 @@ namespace SkereBiertjes
             }
         }
 
-
+        /**
+         * Currently not implemented, maybe later
+         */
         private void BeerSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             // Set sender.Text. You can use args.SelectedItem to build your text string.
         }
 
+        /**
+         * UI method to handle things when the app is busy searching beers
+         */
         private void uiSearchMode()
         {
             EmptyStateElements.Visibility = Visibility.Collapsed;
-            BeerItemsGrid.Visibility = Visibility.Collapsed;
+            BeerItemsGrid.Opacity = 15d;
             BigIcon.Text = SearchIcon;
-            InfoGrid.Opacity = 0d;
+            progressRing.IsActive = true;
         }
 
+        /**
+         * UI method to handle things when the app has found no beers to display
+         */
         private void uiDoneSearchingResultEmpty()
         {
-            BeerItemsGrid.Visibility = Visibility.Collapsed;
             EmptyStateElements.Visibility = Visibility.Visible;
+            BeerItemsGrid.Opacity = 0;
             progressRing.IsActive = false;
         }
 
+        /**
+        * UI method to handle things when the app has found more than zero beers to display
+        */
+        private void uiDoneSearchingResultsNotEmpty()
+        {
+            EmptyStateElements.Visibility = Visibility.Collapsed;
+            BeerItemsGrid.Opacity = 100d;
+            progressRing.IsActive = false;
+        }
+
+        /**
+         * When the user presses enter or clicks on the search button, this method is called
+         */
         private async void BeerSearchBox_QuerySubmitted(AutoSuggestBox sender,
             AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            progressRing.IsActive = true;
-
             if (args.ChosenSuggestion == null)
             {
                 uiSearchMode();
@@ -126,8 +150,12 @@ namespace SkereBiertjes
                 // Beers found and something has been entered in the SearchBox!
                 if (!string.IsNullOrWhiteSpace(args.QueryText) && this.beerScraper.getBeersCount() > 0)
                 {
-                    // Put beers in a new ArrayList for making up the grid
-                    displayBeersOnScreenAsync(args.QueryText);
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.High, async () =>
+                    {
+                        var userInputText = args.QueryText;
+                        Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync(userInputText); });
+                        t1.Start();
+                    });
                 }
                 // No beers found
                 else if (this.beerScraper.getBeersCount() == 0)
@@ -145,42 +173,106 @@ namespace SkereBiertjes
             }
         }
 
-        private void displayBeersOnScreenAsync(string search)
+        /**
+         * This async method creates a row in the Grid for
+         * particular beer item. It needs to be executed immediately.
+         */
+        private async Task UpdateGridBeer(object row)
         {
-            // Backend stuff is put in the Task below
-            Task.Run(() =>
+            // UI THREAD STUFF
+            await Dispatcher.RunAsync(CoreDispatcherPriority.High, () => { beerItems.Add(row); });
+        }
+
+        /**
+         * Method to handle displaying beers on the Grid.
+         * It creates several different Tasks so that the UI will
+         * not be blocked!
+         */
+        private async Task<bool> displayBeersOnScreenAsync(string search)
+        {
+            bool bRet = true;
+            List<Task> tasks = new List<Task>();
+
+            try
             {
-                List<object> beersGridCollection = new List<object>();
-                beers = this.beerScraper.search(search, this.filter);
-                
-                foreach (var beer in beers)
-                {
-                    var description =
-                        $"{beer.getTitle()} - {beer.getBottleAmount()} x {(float) beer.getVolume() / 1000}L";
-                    var hasReduction = (string.IsNullOrWhiteSpace(beer.getDiscount()))
-                        ? Visibility.Collapsed
-                        : Visibility.Visible;
-                    float.TryParse(beer.getDiscount(), out var discount);
-
-                    Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => beerItems.Add( new
+                // Backend stuff is put in the Task below
+                tasks.Add(Task.Run(async () =>
                     {
-                        BeerDescription = description,
-                        ReductionPriceVisibility = hasReduction,
-                        OriginalPrice = $"€ {String.Format("{0:0.00}", Convert.ToDecimal(discount) / 100)}",
-                        Price =
-                                $"€ {String.Format("{0:0.00}", Convert.ToDecimal(beer.getNormalizedPrice()) / 100)}",
-                        ImageUrl = beer.getUrl(),
-                        ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
-                    }));
-                }
+                        Stopwatch stopWatch = new Stopwatch();
+                        stopWatch.Start();
 
-                // UI Work is done below
-                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    BeerItemsGrid.Visibility = Visibility.Visible;
-                    progressRing.IsActive = false;
-                });
-            });
+                        // UI THREAD STUFF
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                            () =>
+                            {
+                                TimingResults.Text =
+                                    "Verbinden met de webshops en bezig met ophalen van meters bier...\nMoment geduld alstublieft!";
+                            });
+
+                        // Get the List of beers
+                        beers = this.beerScraper.search(search, this.filter);
+
+                        // UI THREAD STUFF
+                        // Going to start adding beers to the Beer Grid
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                            () =>
+                            {
+                                beerItems.Clear();
+                                TimingResults.Text = "Inladen van de opgehaalde biertjes... Dit kan even duren!";
+                            });
+
+                        // Foreach loop to add every beer to the UI Grid
+                        foreach (var beer in beers)
+                        {
+                            var description =
+                                $"{beer.getTitle()} - {beer.getBottleAmount()} x {(float) beer.getVolume() / 1000}L";
+                            var hasReduction = (string.IsNullOrWhiteSpace(beer.getDiscount()))
+                                ? Visibility.Collapsed
+                                : Visibility.Visible;
+                            float.TryParse(beer.getDiscount(), out var discount);
+
+                            // Add current beer to separate UI thread
+                            // where it will be added to the Grid
+                            await UpdateGridBeer(new
+                            {
+                                BeerDescription = description,
+                                ReductionPriceVisibility = hasReduction,
+                                OriginalPrice = $"€ {String.Format("{0:0.00}", Convert.ToDecimal(discount) / 100)}",
+                                Price =
+                                    $"€ {String.Format("{0:0.00}", Convert.ToDecimal(beer.getNormalizedPrice()) / 100)}",
+                                ImageUrl = beer.getUrl(),
+                                ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
+                            });
+                        }
+
+                        // Done searching and filtering beers. Stop the StopWatch!
+                        TimeSpan ts = stopWatch.Elapsed;
+                        var secondsText = ((double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000 == 1d)
+                            ? "seconde"
+                            : "seconden";
+                        var resultsText = (beers.Count == 1) ? "resultaat" : "resultaten";
+
+                        // UI THREAD STUFF
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        {
+                            uiDoneSearchingResultsNotEmpty();
+                            TimingResults.Text =
+                                $"{beers.Count} {resultsText} in {(double) ((ts.Seconds * 1000) + ts.Milliseconds) / 1000} {secondsText}";
+                            beerSearchBox.IsEnabled = true;
+                        });
+                    })
+                );
+
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (Exception agEx)
+            {
+                Debug.WriteLine(agEx.StackTrace);
+                Debug.WriteLine(agEx.Message);
+                bRet = false;
+            }
+
+            return bRet;
         }
 
         private void EmptyStateTextBlock_Loaded(object sender, RoutedEventArgs e)
@@ -200,19 +292,24 @@ namespace SkereBiertjes
             EmptyStateTextBlock.Text = searchTextArray[rnd_num];
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        /**
+         * This method below will be called everytime the user
+         * navigates to the MainPage view (aka 'home')
+         */
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            progressRing.IsActive = true;
             if (e.Parameter is IDictionary<string, Object>)
             {
                 IDictionary<string, Object> data = (IDictionary<string, Object>) e.Parameter;
                 this.filter = (Filter) data["filter"];
                 this.beerScraper = (BeerScraper) data["beerScraper"];
 
+                // Start loading in the beers from the async method "displayBeersOnScreenAsync"
+                // in a specific thread so UI will not be blocked
+
                 uiSearchMode();
-                var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
-                dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                   () => { displayBeersOnScreenAsync(""); });
+                Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync(""); });
+                t1.Start();
             }
 
             base.OnNavigatedTo(e);
