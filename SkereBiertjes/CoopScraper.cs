@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace SkereBiertjes
 {
@@ -74,7 +75,7 @@ namespace SkereBiertjes
         {
             string title = json["productJson"]["name"].ToString();
             string brand = this.parseToBrand(title);
-            int priceNormalized = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString())));
+            int priceNormalized = getPrice(json);
             string discount = "";
             int bottleAmount = parseNameToBottle(title);
             string jsonText = json["productSubText"].ToString();
@@ -83,6 +84,32 @@ namespace SkereBiertjes
             string url = json["image540"].ToString();
 
             return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
+        }
+
+        private int getPrice(JToken json)
+        {
+            int number;
+            string text = json["productJson"]["price"].ToString();
+            Debug.WriteLine(text);
+            if (text.Contains("."))
+            {
+                if (text.Split(".")[1].Length == 1)
+                {
+                    number = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString()) * 10));
+                }
+                else
+                {
+                    number = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString())));
+                }
+            } else if (json["productJson"]["price"].ToString().Contains('.'))
+            {
+                number = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString())));
+            } else
+            {
+                number = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString()) * 100));
+            }
+            Debug.WriteLine(number);
+            return number;
         }
 
         //create a beer with AlbertHeijn allready in it;
