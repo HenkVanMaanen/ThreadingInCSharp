@@ -91,7 +91,6 @@ namespace SkereBiertjes
         {
             int number;
             string text = json["productJson"]["price"].ToString();
-            Debug.WriteLine(text);
             if (text.Contains("."))
             {
                 if (text.Split(".")[1].Length == 1)
@@ -109,7 +108,6 @@ namespace SkereBiertjes
             {
                 number = Convert.ToInt32(Math.Round(Convert.ToDouble(json["productJson"]["price"].ToString()) * 100));
             }
-            Debug.WriteLine(number);
             return number;
         }
 
