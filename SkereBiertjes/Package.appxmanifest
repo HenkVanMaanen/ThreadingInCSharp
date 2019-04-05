@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="nhlstenden.skerebiertjes.lekkerzuipen" Publisher="CN=Aron" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="f2b3eda5-26fa-413b-9852-31e01592ae87" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="25876AceWorks.Skerebiertjes" Publisher="CN=901B5C0C-01BA-4265-A45C-6624207EF128" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="8195d86f-ec61-4fe0-876f-b0ee64ffce53" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>SkereBiertjes</DisplayName>
-    <PublisherDisplayName>Yosh,Chiel,Aron,Henk,Michael</PublisherDisplayName>
+    <DisplayName>Skere biertjes</DisplayName>
+    <PublisherDisplayName>AceWorks</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -15,9 +15,14 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="SkereBiertjes.App">
-      <uap:VisualElements DisplayName="SkereBiertjes" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="SkereBiertjes" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Skere biertjes" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="De app die altijd het goedkoopste bier voor jou vindt." BackgroundColor="transparent">
         <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\BadgeLogo.png" />
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png" ShortName="Skere biertjes">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+            <uap:ShowOn Tile="square310x310Logo" />
+          </uap:ShowNameOnTiles>
         </uap:DefaultTile>
         <uap:SplashScreen BackgroundColor="#FFFFFF" Image="Assets\SplashScreen.png" />
         <uap:InitialRotationPreference>

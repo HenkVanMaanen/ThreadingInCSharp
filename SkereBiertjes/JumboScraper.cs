@@ -13,13 +13,12 @@ namespace SkereBiertjes
 {
     public class JumboScraper : Scraper
     {
-        private string StandardURL;
-        private string keyword = "bier";
+        private string keyword;
         private List<Beer> beers;
 
         public JumboScraper()
         {
-            StandardURL = @"Data/jumbo.html";
+            keyword = "bier";
             beers = new List<Beer>();
         }
 
@@ -33,7 +32,7 @@ namespace SkereBiertjes
 
                 for (var p = 0; p < 4; p++)
                 {
-                    var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + keyword);
+                    var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + this.keyword);
                     string c = await response.Content.ReadAsStringAsync();
                     pages.Add(c);
                    

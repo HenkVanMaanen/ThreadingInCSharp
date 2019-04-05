@@ -14,13 +14,11 @@ namespace SkereBiertjes
 {
     public class CoopScraper : Scraper
     {
-        private string StandardURL;
         private string keyword = "bier";
         private List<Beer> beers; 
 
         public CoopScraper()
         {
-            StandardURL = @"Data/coop.json";
             beers = new List<Beer>();
         }
 

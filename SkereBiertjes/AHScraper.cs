@@ -14,13 +14,11 @@ namespace SkereBiertjes
 {
     public class AHScraper : Scraper
     {
-        private string StandardURL;
         private string keyword = "bier";
         private List<Beer> beers;
 
         public AHScraper()
         {
-            StandardURL = @"Data/albertheijn.json";
             beers = new List<Beer>();
         }
 

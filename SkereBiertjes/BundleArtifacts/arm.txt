@@ -1,0 +1,2 @@
+MainPackage=F:\C#\ThreadingInCSharp\SkereBiertjes\bin\ARM\Release\SkereBiertjes_1.0.0.0_ARM.msix
+SymbolPackage=F:\C#\ThreadingInCSharp\SkereBiertjes\AppPackages\SkereBiertjes_1.0.0.0_Test\SkereBiertjes_1.0.0.0_ARM.appxsym
