@@ -44,6 +44,7 @@ namespace SkereBiertjes
 
         async Task<List<Beer>> Scraper.parseHTML()
         {
+            Debug.WriteLine("Starting Gall en Gall");
             List<Beer> beers = new List<Beer>();
             //get document
             List<string> pages = await getHTML();

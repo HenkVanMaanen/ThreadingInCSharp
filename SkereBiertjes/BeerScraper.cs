@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using Windows.Storage;
+using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace SkereBiertjes
 {
@@ -25,9 +27,9 @@ namespace SkereBiertjes
             this.scrapers = new List<Scraper>
             {
                 new GallEnGallScraper(),
-                new JumboScraper(),
-                new PLUSScraper(),
-                new AHScraper(),
+                //new JumboScraper(),
+                //new PLUSScraper(),
+                //new AHScraper(),
                 new CoopScraper(),
             };
 
@@ -37,13 +39,32 @@ namespace SkereBiertjes
         {
             this.doneSearching = false;
             this.beersCount = 0;
+            var scraperFinishedCount = 0;
+            Mutex mut = new Mutex();
             foreach (Scraper scraper in this.scrapers)
             {
-                List<Beer> beersDB = new List<Beer>();
-                beersDB = await scraper.parseHTML();
-                this.beersCount += beersDB.Count;
-                this.databaseHandler.store(beersDB);
+                var workToDo = new WaitCallback(async o =>
+                {
+                    List<Beer> beersDB = new List<Beer>();
+                    beersDB = await scraper.parseHTML();
+                    this.beersCount += beersDB.Count;
+                    this.databaseHandler.store(beersDB);
+
+                    mut.WaitOne();
+                    scraperFinishedCount++;
+                    mut.ReleaseMutex();
+
+                });
+
+                ThreadPool.QueueUserWorkItem(workToDo);             
             }
+
+            // Wait for scrapers to finish otherwise gui shows zero results
+            while (scraperFinishedCount != scrapers.Count + 1)
+            {
+                Task.Delay(300);
+            }
+
             this.doneSearching = true;
         }
 
