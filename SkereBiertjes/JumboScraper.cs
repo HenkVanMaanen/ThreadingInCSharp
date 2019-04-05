@@ -91,8 +91,35 @@ namespace SkereBiertjes
             int volume;
             try
             {
-                volume = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[2]) * 10;
-            } catch
+                HtmlNode node2 = node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]");
+                if (node2 == null)
+                {
+                    volume = 0;
+                } else
+                {
+                    string text = node2.InnerHtml;
+                    if (text.ToLower().Contains("cl"))
+                    {
+                        string textCL = text.Split(' ')[2];
+                        volume = Convert.ToInt32(textCL) * 10;
+                    } else if (text.ToLower().Contains("ml"))
+                    {
+                        string textML = text.Split(' ')[0];
+                        volume = Convert.ToInt32(textML);
+                    }
+                    else if (text.ToLower().Contains("l"))
+                    {
+                        string textL = text.Split(' ')[2];
+                        textL = textL.Replace(',', '.');
+                       
+                        volume = Convert.ToInt32(Math.Round(Convert.ToDouble(textL) * 10));
+                    } else
+                    {
+                        volume = 0;
+                    }
+                }
+            }
+            catch
             {
                 volume = 0;
             }
@@ -100,10 +127,25 @@ namespace SkereBiertjes
             int bottleAmount;
             try
             {
-                bottleAmount = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[0]); ;
+                HtmlNode node2 = node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]");
+                if(node2 == null)
+                {
+                    bottleAmount = 1;
+                } else
+                {
+                    string text = node2.InnerHtml;
+                    if ((text.ToLower().Contains("cl") || text.ToLower().Contains("l")) && !text.ToLower().Contains("ml"))
+                    {
+                        bottleAmount = Convert.ToInt32(text.Split(' ')[0]);
+                    }
+                    else
+                    {
+                        bottleAmount = 1;
+                    }
+                }
             } catch
             {
-                bottleAmount = 0;
+                bottleAmount = 1;
             }
 
             int priceNormalized;

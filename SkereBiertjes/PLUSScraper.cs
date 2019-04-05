@@ -98,7 +98,7 @@ namespace SkereBiertjes
             string data = node.SelectSingleNode(".//span[contains(@class, 'product-tile__quantity')]").InnerHtml;
             int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
             int volume = totalVolume / bottleAmount;
-            string discount = "";
+            string discount = this.getDiscount(infoNode);
             string url = "https://plus.nl" + node.SelectSingleNode(".//img[contains(@class, 'lazy')]").Attributes["data-src"].Value.Replace("&#47;", "/");
             return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }
@@ -132,12 +132,23 @@ namespace SkereBiertjes
             }
 
             HtmlNode HtmlDiscountPriceNode = node.SelectSingleNode(".//div[contains(@class, 'text-clover')]");
-            if(HtmlDiscountPriceNode != null)
-            {
-                return Convert.ToInt32(HtmlDiscountPriceNode.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", ""));
-            }
 
             return Convert.ToInt32(Math.Round(Convert.ToDouble(node.Attributes["data-price"].Value)));
+        }
+
+        private string getDiscount(HtmlNode node)
+        {
+            if (node == null)
+            {
+                return "";
+            }
+
+            HtmlNode HtmlDiscountPriceNode = node.SelectSingleNode(".//div[contains(@class, 'text-clover')]");
+            if (HtmlDiscountPriceNode != null)
+            {
+                return HtmlDiscountPriceNode.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+            }
+            return "";
         }
 
         private int parseToAmount(string title)

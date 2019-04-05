@@ -117,8 +117,29 @@ namespace SkereBiertjes
             try
             {
                 jsonParsed = parseToJson(node.InnerText);
-                discount = parseToDiscount(jsonParsed);
-                bottleAmount = parseToAmountDiscount(jsonParsed);
+                if (jsonParsed == null)
+                {
+                    if (node.InnerText.Contains("24"))
+                    {
+                        bottleAmount = 24;
+                    }else if (node.InnerText.Contains("12"))
+                    {
+                        bottleAmount = 12;
+                    }
+                    else if (node.InnerText.Contains("6"))
+                    {
+                        bottleAmount = 6;
+                    }
+                    else
+                    {
+                        bottleAmount = 1;
+                    }
+                    discount = "";
+                } else
+                {
+                    discount = parseToDiscount(jsonParsed);
+                    bottleAmount = parseToAmountDiscount(jsonParsed);
+                }
             }
             catch
             {
@@ -162,10 +183,9 @@ namespace SkereBiertjes
         //bc volume is only accisble in name, parse name to get volume in ml
         private int parseNameToVolume(string title)
         {
-            Debug.WriteLine(title);
             if (title == "")
             {
-                return -1;
+                return 300;
             }
 
             string[] words = title.Split(' ');
@@ -173,31 +193,41 @@ namespace SkereBiertjes
             //will parse everything ending in CL
             if (words[words.Length - 1].Contains("CL"))
             {
-                string word = words[words.Length - 1];
-                word = word.Remove(word.Length - 2, 2);
-                Int32 r;
                 try
                 {
-                    r = Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10));
-                }
-                catch
+                    string word = words[words.Length - 1];
+                    if (word.ToLower().Contains("x"))
+                    {
+                        words = word.ToLower().Split('x');
+                        words = words[1].ToLower().Split("cl");
+                        return Convert.ToInt32(Math.Round(Convert.ToDouble(words[0]) * 10));
+                    }
+                    else
+                    {
+                        word = word.Remove(word.Length - 2, 2);
+                        return Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10));
+                    }
+                } catch
                 {
-                    return -1;
+                    return 300;
                 }
-                return r; 
             }
-            return -1;
+            return 300;
         }
 
         private JObject parseToJson(string text)
         {
-            text = text.Remove(0, text.IndexOf('=') + 2);
-            text = text.Remove(text.IndexOf('\n'), text.Length - text.IndexOf('\n'));
-            text = text.Replace("\\", "");
-            text = text.Replace("=\"", "=\\\"");
-            text = text.Replace("\">", "\\\">");
-            text = text.Replace(";", "");
-            return JObject.Parse(text);
+            if(text.IndexOf("data-tracking-click=") > 0)
+            {
+                text = text.Remove(0, text.IndexOf("data-tracking-click=") + "data-tracking-click=".Length + 1);
+                text = text.Remove(text.IndexOf('\n'), text.Length - text.IndexOf('\n'));
+                text = text.Replace("\\", "");
+                text = text.Replace("=\"", "=\\\"");
+                text = text.Replace("\">", "\\\">");
+                text = text.Replace(";", "");
+                return JObject.Parse(text);
+            }
+            return null;
         }
 
         private string parseToDiscount(JObject json)

@@ -57,8 +57,16 @@ namespace SkereBiertjes
                 JToken jsonProducts = null;
                 try
                 {
-                    JObject json = JObject.Parse(doc.DocumentNode.InnerHtml);
-
+                    string text = doc.DocumentNode.InnerHtml;
+                    JObject json;
+                    if (text[0].Equals("\"") && text[text.Length].Equals("\""))
+                    {
+                        text = text.Remove(text.Length , 1).Remove(0, 1);
+                    }
+                    text = text.Replace("href=\"", "href=\\\"");
+                    text = text.Replace("\">", "\\\">");
+                    json = JObject.Parse(text);
+                    
                     jsonProducts = json.SelectToken("products");
                 } catch
                 {
@@ -93,16 +101,27 @@ namespace SkereBiertjes
             string discount = "";
             int bottleAmount = this.parseNameToBottle(json["unitSize"].ToString());
 
-            string url;
-            try
-            {
-                url = json["images"][0]["url"].ToString();
-            } catch
-            {
-                url = "";
-            }
+            string url = getURL(json);            
 
             return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
+        }
+
+        private string getURL(JToken json)
+        {
+            try
+            {
+                if (json["images"].Count() == 0)
+                {
+                    return "";
+                }
+                else
+                {
+                    return json["images"][0]["url"].ToString();
+                }
+            } catch
+            {
+                return "";
+            }
         }
 
         private string parseToBrand(string title)
@@ -152,18 +171,17 @@ namespace SkereBiertjes
             }
 
             string[] words = text.Split(' ');
-
+            string word;
             //will parse everything ending in CL
             if (words[words.Length - 1].Contains("cl"))
             {
-                string word = words[words.Length - 2];
+                word = words[words.Length - 2];
                 return Convert.ToInt32(Math.Round(Convert.ToDouble(word) * 10));
             }
             //will parse everything ending in l
             if (words[words.Length - 1].Contains("l"))
             {
-                string word = words[words.Length - 2].Replace(",", ".");
-
+                word = words[words.Length - 2].Replace(",", ".");
                 return Convert.ToInt32(Math.Round(Double.Parse(word) * 1000));
             }
             

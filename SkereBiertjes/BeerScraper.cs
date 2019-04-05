@@ -39,7 +39,8 @@ namespace SkereBiertjes
             this.beersCount = 0;
             foreach (Scraper scraper in this.scrapers)
             {
-                List<Beer> beersDB = await scraper.parseHTML();
+                List<Beer> beersDB = new List<Beer>();
+                beersDB = await scraper.parseHTML();
                 this.beersCount += beersDB.Count;
                 this.databaseHandler.store(beersDB);
             }
