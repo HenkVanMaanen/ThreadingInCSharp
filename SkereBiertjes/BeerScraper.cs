@@ -27,9 +27,9 @@ namespace SkereBiertjes
             this.scrapers = new List<Scraper>
             {
                 new GallEnGallScraper(),
-                //new JumboScraper(),
-                //new PLUSScraper(),
-                //new AHScraper(),
+                new JumboScraper(),
+                new PLUSScraper(),
+                new AHScraper(),
                 new CoopScraper(),
             };
 
@@ -50,9 +50,9 @@ namespace SkereBiertjes
                     this.beersCount += beersDB.Count;
                     this.databaseHandler.store(beersDB);
 
-                    mut.WaitOne();
+                    //mut.WaitOne();
                     scraperFinishedCount++;
-                    mut.ReleaseMutex();
+                    //mut.ReleaseMutex();
 
                 });
 
@@ -60,10 +60,10 @@ namespace SkereBiertjes
             }
 
             // Wait for scrapers to finish otherwise gui shows zero results
-            while (scraperFinishedCount != scrapers.Count + 1)
+            /*while (scraperFinishedCount != scrapers.Count + 1)
             {
-                Task.Delay(300);
-            }
+                await Task.Delay(300);
+            }*/
 
             this.doneSearching = true;
         }

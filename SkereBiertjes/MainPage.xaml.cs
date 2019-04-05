@@ -40,6 +40,7 @@ namespace SkereBiertjes
         private BeerScraper beerScraper;
         private ObservableCollection<object> beerItems = new ObservableCollection<object>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private ObservableCollection<string> possibleSuggestions = new ObservableCollection<string>();
 
         public ObservableCollection<object> BeerItems
         {
@@ -50,8 +51,20 @@ namespace SkereBiertjes
         {
             this.InitializeComponent();
             this.suggestions = new ObservableCollection<string>();
-            beerSearchBox.IsEnabled = false;
+            //beerSearchBox.IsEnabled = false;
             BigIcon.Text = SearchIcon;
+            InfoGrid.Opacity = 0d;
+        }
+
+        private async Task AddPossibleSuggestionsAsync(string suggestion, CancellationToken cancellationToken)
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    possibleSuggestions.Add(suggestion);
+                }
+            });
         }
 
         private void BeerSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -64,25 +77,6 @@ namespace SkereBiertjes
             {
                 if (!string.IsNullOrWhiteSpace(sender.Text))
                 {
-                    var possibleSuggestions = new ObservableCollection<string>();
-                    possibleSuggestions.Clear();
-                    //possibleSuggestions.Add("Albert Heijn");
-                    //possibleSuggestions.Add("Jumbo");
-                    //possibleSuggestions.Add("Gal & Gal");
-                    //possibleSuggestions.Add("Coop");
-                    //possibleSuggestions.Add("PLUS");
-                    //possibleSuggestions.Add("Hertog Jan");
-                    //possibleSuggestions.Add("Grolsch");
-                    //possibleSuggestions.Add("Palm");
-                    //possibleSuggestions.Add("Bavaria");
-                    //possibleSuggestions.Add("Brand");
-                    //possibleSuggestions.Add("Heineken");
-                    //possibleSuggestions.Add("Jupiler");
-                    //possibleSuggestions.Add("Kordaat");
-                    //possibleSuggestions.Add("Kornuit");
-                    //possibleSuggestions.Add("Amstel");
-                    //possibleSuggestions.Add("Gulpener");
-
                     foreach (string possibleSuggestion in possibleSuggestions)
                     {
                         if (possibleSuggestion.ToLower().Contains(sender.Text.ToLower().Trim()))
@@ -109,6 +103,7 @@ namespace SkereBiertjes
          */
         private void uiSearchMode()
         {
+            InfoGrid.Opacity = 1d;
             EmptyStateElements.Visibility = Visibility.Collapsed;
             BeerItemScrollViewer.Opacity = 0.25d;
             BigIcon.Text = SearchIcon;
@@ -134,6 +129,7 @@ namespace SkereBiertjes
         private void uiDoneSearchingResultsNotEmpty()
         {
             EmptyStateElements.Visibility = Visibility.Collapsed;
+            BigIcon.Text = SearchIcon;
             BeerItemScrollViewer.Opacity = 1d;
             progressRing.IsActive = false;
         }
@@ -157,7 +153,7 @@ namespace SkereBiertjes
                     // Submit cancellation for previous tasks so no new Beer Items will be added to the Grid
                     cancellationTokenSource.Cancel();
 
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.High, async () =>
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
                     {
                         var userInputText = args.QueryText;
 
@@ -165,7 +161,10 @@ namespace SkereBiertjes
                         cancellationTokenSource.Dispose();
                         cancellationTokenSource = new CancellationTokenSource();
 
-                        Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync(userInputText, cancellationTokenSource.Token); });
+                        Thread t1 = new Thread(async () =>
+                        {
+                            await displayBeersOnScreenAsync(userInputText, cancellationTokenSource.Token);
+                        });
                         t1.Start();
                     });
                 }
@@ -226,7 +225,6 @@ namespace SkereBiertjes
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                             () =>
                             {
-                                beerItems.Clear();
                                 TimingResults.Text = "Inladen van de opgehaalde biertjes... Dit kan even duren!";
                                 beerSearchBox.IsEnabled = true;
                             });
@@ -239,7 +237,7 @@ namespace SkereBiertjes
                                 break;
                             }
 
-                                var description =
+                            var description =
                                 $"{beer.getTitle()} - {beer.getBottleAmount()} x {(float) beer.getVolume() / 1000}L";
                             var hasReduction = (string.IsNullOrWhiteSpace(beer.getDiscount()))
                                 ? Visibility.Collapsed
@@ -258,6 +256,11 @@ namespace SkereBiertjes
                                 ImageUrl = beer.getUrl(),
                                 ShopImageUrl = $"/Assets/shop/{beer.getShopName().Replace(" ", "").ToLower()}.png",
                             }, cancellationTokenSource.Token);
+
+                            if (!possibleSuggestions.Contains(beer.getTitle()))
+                            {
+                                await AddPossibleSuggestionsAsync(beer.getTitle(), cancellationTokenSource.Token);
+                            }
                         }
 
                         // Done searching and filtering beers. Stop the StopWatch!
@@ -329,9 +332,15 @@ namespace SkereBiertjes
                 // Start loading in the beers from the async method "displayBeersOnScreenAsync"
                 // in a specific thread so UI will not be blocked
 
-                uiSearchMode();
-                Thread t1 = new Thread(async () => { await displayBeersOnScreenAsync("", cancellationTokenSource.Token); });
-                t1.Start();
+                if (beerScraper.getBeersCount() > 0)
+                {
+                    uiSearchMode();
+                    Thread t1 = new Thread(async () =>
+                    {
+                        await displayBeersOnScreenAsync("", cancellationTokenSource.Token);
+                    });
+                    t1.Start();
+                }
             }
 
             base.OnNavigatedTo(e);
