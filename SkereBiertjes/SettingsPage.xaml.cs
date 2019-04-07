@@ -55,6 +55,11 @@ namespace SkereBiertjes
             cancellationTokenSource.Dispose();
             cancellationTokenSource = new CancellationTokenSource();
 
+            int totalGetting = 0;
+            int totalParsing = 0;
+            int totalGettingDone = 0;
+            int totalParsingDone = 0;
+            bool multithread = (bool) localSettings.Values["multithreading_enabled"];
             while (true)
             {
                 if (data.Count > 0)
@@ -62,6 +67,41 @@ namespace SkereBiertjes
                     foreach (string txt in data.ToList())
                     {
                         await UpdateBenchMarkGrid(txt, cancellationTokenSource.Token);
+                        if (txt.Contains("Getting") && !txt.Contains("Total"))
+                        {
+                            totalGettingDone++;
+                            if (multithread)
+                            {
+                                totalGetting = Convert.ToInt32(txt.Split(" ")[4]);
+                            }
+                            else
+                            {
+                                totalGetting += Convert.ToInt32(txt.Split(" ")[4]);
+                            }
+
+                            if (totalGettingDone == this.beerScraper.getScrapers().Count)
+                            {
+                                data.Add("[Getting Total] " + totalGetting + "ms");
+                            }
+
+                        }
+                        else if (txt.Contains("parsing") && !txt.Contains("Total")) 
+                        {
+                            totalParsingDone++;
+                            if (multithread)
+                            {
+                                totalParsing = Convert.ToInt32(txt.Split(" ")[4]);
+                            }
+                            else
+                            {
+                                totalParsing += Convert.ToInt32(txt.Split(" ")[4]);
+                            }
+
+                            if (totalGettingDone == this.beerScraper.getScrapers().Count)
+                            {
+                                data.Add("[Parsing Total] " + totalParsing + "ms");
+                            }
+                        }
                         data.Remove(txt);
                     }
                 }
