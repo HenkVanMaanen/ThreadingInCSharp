@@ -15,13 +15,24 @@ namespace SkereBiertjes
         public string StandardURL;
         private string keyword = "bier";
         private List<Beer> beers;
-        private bool benchmark = true;
+        private bool benchmark = false;
+        private List<string> benchmarkData;
 
         public GallEnGallScraper()
         {
             //set data
             beers = new List<Beer>();
             StandardURL = @"Data/gall&gall.html";
+        }
+        
+        public void setBenchmark(bool benchmark)
+        {
+            this.benchmark = benchmark;
+        }
+
+        public void setBenchmarkData(List<string> data)
+        {
+            this.benchmarkData = data;
         }
 
         async Task<List<string>> getHTML()
@@ -45,7 +56,7 @@ namespace SkereBiertjes
 
         async Task<List<Beer>> Scraper.parseHTML()
         {
-            Debug.WriteLine("[GALL&GALL] Starting");
+            this.benchmarkData.Add("[GALL&GALL] Starting");
             List<Beer> beers = new List<Beer>();
             
             Stopwatch stopWatch = new Stopwatch();
@@ -57,7 +68,7 @@ namespace SkereBiertjes
             if (benchmark)
             {
                 int ts = stopWatch.Elapsed.Milliseconds;
-                Debug.WriteLine("[GALL&GALL] Getting html took: " + ts + " ms");
+                this.benchmarkData.Add("[GALL&GALL] Getting html took: " + ts + " ms");
             }
 
             stopWatch.Restart();
@@ -98,7 +109,7 @@ namespace SkereBiertjes
             if (benchmark)
             {
                 int ts = stopWatch.Elapsed.Milliseconds;
-                Debug.WriteLine("[GALL&GALL] parsing html took: " + ts + " ms");
+                this.benchmarkData.Add("[GALL&GALL] parsing html took: " + ts + " ms");
             }
 
             return beers;

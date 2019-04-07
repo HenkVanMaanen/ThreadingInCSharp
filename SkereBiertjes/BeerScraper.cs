@@ -17,6 +17,7 @@ namespace SkereBiertjes
         private DatabaseHandler databaseHandler;
         private int beersCount;
         private bool doneSearching;
+        private List<string> benchmarkData;
 
         public BeerScraper(DatabaseHandler databaseHandler)
         {
@@ -35,14 +36,29 @@ namespace SkereBiertjes
 
         }
 
-        public async void startFindingFirstBeers()
+        public void setBenchmarkData(List<string> data)
+        {
+            this.benchmarkData = data;
+        }
+
+        public async void startFindingFirstBeers(bool benchmark)
         {
             this.doneSearching = false;
             this.beersCount = 0;
             var scraperFinishedCount = 0;
             Mutex mut = new Mutex();
+
             foreach (Scraper scraper in this.scrapers)
             {
+                if (benchmark)
+                {
+                    scraper.setBenchmark(benchmark);
+                    scraper.setBenchmarkData(this.benchmarkData);
+                } else
+                {
+                    scraper.setBenchmarkData(new List<string>());
+                }
+
                 var workToDo = new WaitCallback(async o =>
                 {
                     List<Beer> beersDB = new List<Beer>();

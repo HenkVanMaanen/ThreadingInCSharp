@@ -10,5 +10,7 @@ namespace SkereBiertjes
     {
         List<Beer> getBeers();
         Task<List<Beer>> parseHTML();
+        void setBenchmark(bool benchmark);
+        void setBenchmarkData(List<string> data);
     }
 }

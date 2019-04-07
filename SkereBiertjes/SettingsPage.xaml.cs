@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace SkereBiertjes
 {
     public sealed partial class SettingsPage : Page
     {
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+        private BeerScraper beerScraper;
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private ObservableCollection<string> benchmarkTest = new ObservableCollection<string>();
 
         public SettingsPage()
         {
@@ -31,8 +38,44 @@ namespace SkereBiertjes
         }
 
         // Benchmark start button clicked
-        private void BenchmarkStart_Click(object sender, RoutedEventArgs e)
+        private async void BenchmarkStart_Click(object sender, RoutedEventArgs e)
         {
+            cancellationTokenSource.Cancel();
+
+            List<string> data = new List<string>();
+            this.beerScraper.setBenchmarkData(data);
+
+            Task T1 = new Task(() => {
+                beerScraper.startFindingFirstBeers(true);
+            });
+
+            T1.Start();
+
+
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+
+            while (true)
+            {
+                if (data.Count > 0)
+                {
+                    foreach (string txt in data.ToList())
+                    {
+                        await UpdateBenchMarkGrid(txt, cancellationTokenSource.Token);
+                        data.Remove(txt);
+                    }
+                }
+                await Task.Delay(100);
+            }
+        }
+
+        private async Task UpdateBenchMarkGrid(string row, CancellationToken cancellationToken)
+        {
+            // UI THREAD STUFF
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.High, () => { benchmarkTest.Add(row); });
+            }
         }
 
         // Multithreading toggled
@@ -53,6 +96,17 @@ namespace SkereBiertjes
                     localSettings.Values["multithreading_enabled"] = false;
                 }
             }
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is BeerScraper)
+            {
+                // Reset the token
+
+                this.beerScraper = (BeerScraper) e.Parameter;
+            }
+            base.OnNavigatedTo(e);
         }
     }
 }

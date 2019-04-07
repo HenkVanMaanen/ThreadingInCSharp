@@ -44,7 +44,7 @@ namespace SkereBiertjes
             this.beerScraper = new BeerScraper(databaseHandler);
             
             Task T1 = new Task(() => {
-                beerScraper.startFindingFirstBeers();
+                beerScraper.startFindingFirstBeers(false);
             });
 
             T1.Start();
@@ -74,7 +74,7 @@ namespace SkereBiertjes
             // If Settings was clicked, navigate to the Settings page
             if (args.IsSettingsSelected)
             {
-                ContentFrame.Navigate(typeof(SettingsPage));
+                ContentFrame.Navigate(typeof(SettingsPage), this.beerScraper);
             }
             
             // Else some other menu item was clicked

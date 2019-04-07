@@ -16,16 +16,27 @@ namespace SkereBiertjes
     {
         private string keyword = "bier";
         private List<Beer> beers;
-        private bool benchmark = true;
+        private bool benchmark = false;
+        private List<string> benchmarkData;
 
         public PLUSScraper()
         {
             beers = new List<Beer>();
         }
 
+        public void setBenchmark(bool benchmark)
+        {
+            this.benchmark = benchmark;
+        }
+        
+        public void setBenchmarkData(List<string> data)
+        {
+            this.benchmarkData = data;
+        }
+
         async Task<List<Beer>> Scraper.parseHTML()
         {
-            Debug.WriteLine("[PLUS] Starting");
+            this.benchmarkData.Add("[PLUS] Starting");
             List<Beer> beers = new List<Beer>();
 
             Stopwatch stopWatch = new Stopwatch();
@@ -37,9 +48,10 @@ namespace SkereBiertjes
             if (benchmark)
             {
                 int ts = stopWatch.Elapsed.Milliseconds;
-                Debug.WriteLine("[PLUS] Getting html took: " + ts + " ms");
+                this.benchmarkData.Add("[PLUS] Getting html took: " + ts + " ms");
             }
 
+            stopWatch.Reset();
             foreach (string page in pages)
             {
                 //get document
@@ -72,7 +84,7 @@ namespace SkereBiertjes
             if (benchmark)
             {
                 int ts = stopWatch.Elapsed.Milliseconds;
-                Debug.WriteLine("[PLUS] parsing html took: " + ts + " ms");
+                this.benchmarkData.Add("[PLUS] parsing html took: " + ts + " ms");
             }
             return beers;
         }
