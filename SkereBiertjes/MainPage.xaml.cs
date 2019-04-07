@@ -331,16 +331,13 @@ namespace SkereBiertjes
 
                 // Start loading in the beers from the async method "displayBeersOnScreenAsync"
                 // in a specific thread so UI will not be blocked
-
-                if (beerScraper.getBeersCount() > 0)
+                
+                uiSearchMode();
+                Thread t1 = new Thread(async () =>
                 {
-                    uiSearchMode();
-                    Thread t1 = new Thread(async () =>
-                    {
-                        await displayBeersOnScreenAsync("", cancellationTokenSource.Token);
-                    });
-                    t1.Start();
-                }
+                    await displayBeersOnScreenAsync("", cancellationTokenSource.Token);
+                });
+                t1.Start();
             }
 
             base.OnNavigatedTo(e);
