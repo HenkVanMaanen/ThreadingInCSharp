@@ -41,6 +41,7 @@ namespace SkereBiertjes
         private ObservableCollection<object> beerItems = new ObservableCollection<object>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private ObservableCollection<string> possibleSuggestions = new ObservableCollection<string>();
+        private bool benchmark = true;
 
         public ObservableCollection<object> BeerItems
         {
@@ -229,6 +230,10 @@ namespace SkereBiertjes
                                 beerSearchBox.IsEnabled = true;
                             });
 
+
+                        Stopwatch stopWatch2 = new Stopwatch();
+                        stopWatch.Start();
+
                         // Foreach loop to add every beer to the UI Grid
                         foreach (var beer in beers)
                         {
@@ -261,6 +266,13 @@ namespace SkereBiertjes
                             {
                                 await AddPossibleSuggestionsAsync(beer.getTitle(), cancellationTokenSource.Token);
                             }
+                        }
+
+                        stopWatch.Stop();
+                        if (benchmark)
+                        {
+                            int ts2 = stopWatch.Elapsed.Milliseconds;
+                            Debug.WriteLine("Showing result to UI took: " + ts2 + " ms");
                         }
 
                         // Done searching and filtering beers. Stop the StopWatch!

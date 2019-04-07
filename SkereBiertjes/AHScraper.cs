@@ -14,13 +14,12 @@ namespace SkereBiertjes
 {
     public class AHScraper : Scraper
     {
-        private string StandardURL;
         private string keyword = "bier";
         private List<Beer> beers;
+        private bool benchmark = true;
 
         public AHScraper()
         {
-            StandardURL = @"Data/albertheijn.json";
             beers = new List<Beer>();
         }
 
@@ -45,10 +44,22 @@ namespace SkereBiertjes
 
         async Task<List<Beer>> Scraper.parseHTML()
         {
-            Debug.WriteLine("Starting AH");
+            Debug.WriteLine("[AH] Starting");
             List<Beer> beers = new List<Beer>();
+
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             var pages = await getHTML();
 
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[AH] Getting html took: " + ts + " ms");
+            }
+
+            stopWatch.Restart();
             foreach (string page in pages)
             {
                 var doc = new HtmlDocument();
@@ -83,6 +94,13 @@ namespace SkereBiertjes
                     //print info from beer
                     beer.printInfo();
                 }
+            }
+
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[AH] parsing html took: " + ts + " ms");
             }
             return beers;
         }

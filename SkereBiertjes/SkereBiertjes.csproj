@@ -132,7 +132,6 @@
       <DependentUpon>FilterPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="GallEnGallScraper.cs" />
-    <Compile Include="GUI.cs" />
     <Compile Include="JumboScraper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

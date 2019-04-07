@@ -17,6 +17,7 @@ namespace SkereBiertjes
         private DatabaseHandler databaseHandler;
         private int beersCount;
         private bool doneSearching;
+        private bool benchmark = true;
 
         public BeerScraper(DatabaseHandler databaseHandler)
         {

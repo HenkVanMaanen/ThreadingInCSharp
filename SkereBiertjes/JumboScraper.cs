@@ -13,13 +13,12 @@ namespace SkereBiertjes
 {
     public class JumboScraper : Scraper
     {
-        private string StandardURL;
         private string keyword = "bier";
         private List<Beer> beers;
+        private bool benchmark = true;
 
         public JumboScraper()
         {
-            StandardURL = @"Data/jumbo.html";
             beers = new List<Beer>();
         }
 
@@ -45,10 +44,22 @@ namespace SkereBiertjes
 
         async Task<List<Beer>> Scraper.parseHTML()
         {
-            Debug.WriteLine("Starting Jumbo");
+            Debug.WriteLine("[JUMBO] Starting");
             List<Beer> beers = new List<Beer>();
+
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             var pages = await getHTML();
 
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[JUMBO] Getting html took: " + ts + " ms");
+            }
+
+            stopWatch.Restart();
             foreach (string page in pages)
             {
                 //get document
@@ -75,6 +86,13 @@ namespace SkereBiertjes
                         beer.printInfo();
                     }
                 }
+            }
+            
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[JUMBO] parsing html took: " + ts + " ms");
             }
             return beers;
         }

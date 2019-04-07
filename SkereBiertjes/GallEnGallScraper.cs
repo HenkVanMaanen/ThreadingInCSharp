@@ -15,6 +15,7 @@ namespace SkereBiertjes
         public string StandardURL;
         private string keyword = "bier";
         private List<Beer> beers;
+        private bool benchmark = true;
 
         public GallEnGallScraper()
         {
@@ -44,11 +45,22 @@ namespace SkereBiertjes
 
         async Task<List<Beer>> Scraper.parseHTML()
         {
-            Debug.WriteLine("Starting Gall en Gall");
+            Debug.WriteLine("[GALL&GALL] Starting");
             List<Beer> beers = new List<Beer>();
-            //get document
+            
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             List<string> pages = await getHTML();
 
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[GALL&GALL] Getting html took: " + ts + " ms");
+            }
+
+            stopWatch.Restart();
             foreach (string page in pages)
             {
 
@@ -81,7 +93,14 @@ namespace SkereBiertjes
                     }
                 }
             }
-            
+
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[GALL&GALL] parsing html took: " + ts + " ms");
+            }
+
             return beers;
         }
 

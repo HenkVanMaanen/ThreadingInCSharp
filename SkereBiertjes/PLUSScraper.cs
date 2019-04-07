@@ -14,21 +14,31 @@ namespace SkereBiertjes
 {
     public class PLUSScraper : Scraper
     {
-        public string StandardURL;
         private string keyword = "bier";
         private List<Beer> beers;
+        private bool benchmark = true;
 
         public PLUSScraper()
         {
-            StandardURL = @"Data/plus.html";
             beers = new List<Beer>();
         }
 
         async Task<List<Beer>> Scraper.parseHTML()
         {
-            Debug.WriteLine("Starting PLUS");
+            Debug.WriteLine("[PLUS] Starting");
             List<Beer> beers = new List<Beer>();
+
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             var pages = await getHTML();
+
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[PLUS] Getting html took: " + ts + " ms");
+            }
 
             foreach (string page in pages)
             {
@@ -56,6 +66,13 @@ namespace SkereBiertjes
                         beer.printInfo();
                     }
                 }
+            }
+
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[PLUS] parsing html took: " + ts + " ms");
             }
             return beers;
         }

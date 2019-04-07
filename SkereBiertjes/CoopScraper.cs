@@ -14,13 +14,12 @@ namespace SkereBiertjes
 {
     public class CoopScraper : Scraper
     {
-        private string StandardURL;
         private string keyword = "bier";
-        private List<Beer> beers; 
+        private List<Beer> beers;
+        private bool benchmark = true;
 
         public CoopScraper()
         {
-            StandardURL = @"Data/coop.json";
             beers = new List<Beer>();
         }
 
@@ -41,10 +40,22 @@ namespace SkereBiertjes
 
         async Task<List<Beer>> Scraper.parseHTML()
         {
-            Debug.WriteLine("Starting Coop");
+            Debug.WriteLine("[COOP] Starting");
             List<Beer> beers = new List<Beer>();
+            
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             var pages = await getHTML();
 
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[COOP] Getting html took: " + ts + " ms");
+            }
+            
+            stopWatch.Restart();
             foreach (string page in pages)
             {
                 var doc = new HtmlDocument();
@@ -62,6 +73,13 @@ namespace SkereBiertjes
                     //print info from beer
                     beer.printInfo();
                 }
+            }
+
+            stopWatch.Stop();
+            if (benchmark)
+            {
+                int ts = stopWatch.Elapsed.Milliseconds;
+                Debug.WriteLine("[COOP] parsing html took: " + ts + " ms");
             }
             return beers;
         }
