@@ -9,7 +9,6 @@ namespace SkereBiertjes
     public interface Scraper
     {
         List<Beer> getBeers();
-        Task<List<string>> getHTML();
-        List<Beer> parseHTML();
+        Task<List<Beer>> parseHTML();
     }
 }

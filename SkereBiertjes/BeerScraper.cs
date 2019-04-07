@@ -1,140 +1,121 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using Windows.Storage;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace SkereBiertjes
 {
     public class BeerScraper
     {
+        private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         private List<Scraper> scrapers;
         private DatabaseHandler databaseHandler;
-        private List<Beer> beers;
+        private int beersCount;
+        private bool doneSearching;
 
-        public BeerScraper()
+        public BeerScraper(DatabaseHandler databaseHandler)
         {
-            scrapers = new List<Scraper>
+            this.databaseHandler = databaseHandler;
+            this.beersCount = 0;
+            this.doneSearching = false;
+            //set all scrapers
+            this.scrapers = new List<Scraper>
             {
+                new GallEnGallScraper(),
+                new JumboScraper(),
+                new PLUSScraper(),
                 new AHScraper(),
                 new CoopScraper(),
             };
 
-            //create the database handler
-            this.databaseHandler = new DatabaseHandler("SkereBiertjesV5.db");
-            this.scrapers = new List<Scraper>();
-            this.databaseHandler.delete();
-            //create fake data
-            List<Beer> beers = new List<Beer> {
-                new Beer("Grolsch", 330, 5,  800, "", "Jumbo", "http://pils.com"),
-                new Beer("Grolsch", 330, 5,  799, "", "Jumbo", "http://pils.com"),
-            };
-
-
-            //get all data from the database.
-            this.beers = this.databaseHandler.get();
-
-            this.start();
         }
 
-        public void start()
+        public async void startFindingFirstBeers()
         {
-            //add the fake data to the database.
-            //this.databaseHandler.store(beers);
-
-            //get all data from the database.
-            //this.beers = this.databaseHandler.get();
-            //scrapers.Add(new GallEnGallScraper());
-            //scrapers.Add(new JumboScraper());
-            //scrapers.Add(new PLUSScraper());
-            //scrapers.Add(new AHScraper());
-            scrapers.Add(new CoopScraper());
-
+            this.doneSearching = false;
+            this.beersCount = 0;
+            var scraperFinishedCount = 0;
+            Mutex mut = new Mutex();
             foreach (Scraper scraper in this.scrapers)
             {
-                this.databaseHandler.store(scraper.parseHTML());
+                var workToDo = new WaitCallback(async o =>
+                {
+                    List<Beer> beersDB = new List<Beer>();
+                    beersDB = await scraper.parseHTML();
+                    this.beersCount += beersDB.Count;
+                    this.databaseHandler.store(beersDB);
+
+                    mut.WaitOne();
+                    scraperFinishedCount++;
+                    mut.ReleaseMutex();
+                });
+
+                ThreadPool.QueueUserWorkItem(workToDo);
             }
+            
+            // Wait for scrapers to finish otherwise gui shows zero results
+            while (scraperFinishedCount != scrapers.Count)
+            {
+                await Task.Delay(300);
+            }
+            
+            this.doneSearching = true;
         }
 
-        public Scraper[] getScrapers()
+        public bool isDoneSearching()
         {
-            throw new System.NotImplementedException();
+            return this.doneSearching;
+        }
+
+        public int getBeersCount()
+        {
+            return this.beersCount;
+        }
+
+        public List<Scraper> getScrapers()
+        {
+            return scrapers;
         }
 
         public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker
         {
-            List<Beer> b = new List<Beer>();
-            List<Beer> filtered = new List<Beer>();
+            while (!this.doneSearching)
+            {
+                Task.Delay(100);
+            }
+
             List<Beer> beers = new List<Beer>();
 
-            b = this.databaseHandler.get();
-
-            IEnumerable<Beer> filterQuery = null;
-
-            if (filter.getBrand() != "")
+            beers = this.databaseHandler.get();
+            
+            IDictionary<string, Object> typeFilter = new Dictionary<string, Object>();
+            typeFilter["kratjes"] = 24;
+            typeFilter["sixpack"] = 6;
+            typeFilter["losse flesje"] = 1;
+            
+            if (localSettings.Values["multithreading_enabled"].ToString() == "True")
             {
-                filterQuery = from element in b
-                              where element.getBrand().Contains(filter.getBrand())
-                              select element;
-            }
-            if (filter.getShop() != "")
+                beers =    beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
+                                .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
+                                .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
+                                .Where(beer => keyword == "" || beer.getTitle().ToLower().Contains(keyword.ToLower()))
+                                .OrderBy(beer => beer.getNormalizedPrice()).AsParallel().ToList();
+            } else
             {
-                filterQuery = from element in b
-                              where element.getShopName().Contains(filter.getShop())
-                              select element;
-            }
-            if (filter.getType() != "")
-            {
-                int amountOfBottles = 0;
-                if(filter.getType() == "kratjes")
-                {
-                    amountOfBottles = 24;
-                } else if(filter.getType() == "blikjes")
-                {
-                    amountOfBottles = 6;
-                }
-                else
-                {
-                    amountOfBottles = 1;
-                }
-
-                filterQuery = from element in b
-                              where element.getBottleAmount().Equals(amountOfBottles)
-                              select element;
+                beers = beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
+                                .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
+                                .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
+                                .Where(beer => keyword == "" || beer.getTitle().ToLower().Contains(keyword.ToLower()))
+                                .OrderBy(beer => beer.getNormalizedPrice()).ToList();
             }
 
-            if (filterQuery != null)
-            {
-                foreach (Beer beer in filterQuery)
-                {
-                    filtered.Add(beer);
-                }
-                b = filtered;
-            }
-
-            if (keyword != "")
-            {
-                IEnumerable<Beer> searchQuery = from element in b
-                                                where element.getBrand().Contains(keyword)
-                                                select element;
-
-                foreach (Beer beer in searchQuery)
-                {
-                    beers.Add(beer);
-                }
-                b = beers;
-            }
-            return b;
-        }
-
-        async public void getData()
-        {
-            foreach (Scraper scraper in scrapers) {
-                var w = System.Diagnostics.Stopwatch.StartNew();
-                List<string> pages = await scraper.getHTML();
-                w.Stop();
-                Debug.WriteLine(w.ElapsedMilliseconds);
-            }
+            return beers;
+            
         }
 
         public int timeToScrape()
@@ -153,6 +134,21 @@ namespace SkereBiertjes
         {
             this.brand = brand;
             this.shop = shop;
+            this.type = type;
+        }
+
+        public void setBrand(string brand)
+        {
+            this.brand = brand;
+        }
+
+        public void setShop(string shop)
+        {
+            this.shop = shop;
+        }
+
+        public void setType(string type)
+        {
             this.type = type;
         }
 

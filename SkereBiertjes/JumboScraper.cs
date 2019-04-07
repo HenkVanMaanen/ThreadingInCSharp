@@ -14,50 +14,71 @@ namespace SkereBiertjes
     public class JumboScraper : Scraper
     {
         private string StandardURL;
+        private string keyword = "bier";
         private List<Beer> beers;
-        
+
         public JumboScraper()
         {
-            beers = new List<Beer>();
             StandardURL = @"Data/jumbo.html";
+            beers = new List<Beer>();
         }
 
-        async Task<List<string>> Scraper.getHTML()
+        async Task<List<string>> getHTML()
         {
-            throw new NotImplementedException();
-        }
+            var pages = new List<string>();
 
-        public List<Beer> parseHTML()
-        {
-            List<Beer> beers = new List<Beer>();
-            //get document
-            var doc = new HtmlDocument();
-            doc.OptionFixNestedTags = true;
-            doc.Load(StandardURL);
-
-            var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'jum-item-product')]");
-
-            if (nodes == null)
+            using (var httpClient = new HttpClient())
             {
-                Debug.WriteLine("no nodes selected");
-                return null;
-            }
 
-            foreach (var node in nodes)
-            {
-                if (node != null)
+
+                for (var p = 0; p < 4; p++)
                 {
-                    Beer beer = this.parseData(node);
+                    var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + keyword);
+                    string c = await response.Content.ReadAsStringAsync();
+                    pages.Add(c);
+                   
+                }
 
-                    beers.Add(beer);
+                return pages;
+            }
+        }
 
-                    beer.printInfo();
+        async Task<List<Beer>> Scraper.parseHTML()
+        {
+            Debug.WriteLine("Starting Jumbo");
+            List<Beer> beers = new List<Beer>();
+            var pages = await getHTML();
+
+            foreach (string page in pages)
+            {
+                //get document
+                var doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(page);
+
+                var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'jum-item-product')]");
+
+                if (nodes == null)
+                {
+                    Debug.WriteLine("no nodes selected");
+                    break;
+                }
+
+                foreach (var node in nodes)
+                {
+                    if (node != null)
+                    {
+                        Beer beer = this.parseData(node);
+
+                        beers.Add(beer);
+
+                        beer.printInfo();
+                    }
                 }
             }
-
             return beers;
         }
-        
+
         List<Beer> Scraper.getBeers()
         {
             return beers;
@@ -65,19 +86,108 @@ namespace SkereBiertjes
 
         private Beer parseData(HtmlNode node)
         {
-            string brand = node.SelectSingleNode(".//a[contains(@data-jum-action, 'quickView')]").InnerHtml;
-            int volume = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[2]) * 10;
-            int bottleAmount = Convert.ToInt32(node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]").InnerHtml.Split(' ')[0]); ;
-            int priceNormalized = Convert.ToInt32(node.SelectSingleNode(".//input[contains(@id, 'PriceInCents')]").Attributes["value"].Value);
+            string title = node.SelectSingleNode(".//a[contains(@data-jum-action, 'quickView')]").InnerHtml;
+            string brand = this.parseToBrand(title);
+
+            int volume;
+            try
+            {
+                HtmlNode node2 = node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]");
+                if (node2 == null)
+                {
+                    volume = 0;
+                } else
+                {
+                    string text = node2.InnerHtml;
+                    if (text.ToLower().Contains("cl"))
+                    {
+                        string textCL = text.Split(' ')[2];
+                        volume = Convert.ToInt32(textCL) * 10;
+                    } else if (text.ToLower().Contains("ml"))
+                    {
+                        string textML = text.Split(' ')[0];
+                        volume = Convert.ToInt32(textML);
+                    }
+                    else if (text.ToLower().Contains("l"))
+                    {
+                        string textL = text.Split(' ')[2];
+                        textL = textL.Replace(',', '.');
+                       
+                        volume = Convert.ToInt32(Math.Round(Convert.ToDouble(textL) * 10));
+                    } else
+                    {
+                        volume = 0;
+                    }
+                }
+            }
+            catch
+            {
+                volume = 0;
+            }
+
+            int bottleAmount;
+            try
+            {
+                HtmlNode node2 = node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]");
+                if(node2 == null)
+                {
+                    bottleAmount = 1;
+                } else
+                {
+                    string text = node2.InnerHtml;
+                    if ((text.ToLower().Contains("cl") || text.ToLower().Contains("l")) && !text.ToLower().Contains("ml"))
+                    {
+                        bottleAmount = Convert.ToInt32(text.Split(' ')[0]);
+                    }
+                    else
+                    {
+                        bottleAmount = 1;
+                    }
+                }
+            } catch
+            {
+                bottleAmount = 1;
+            }
+
+            int priceNormalized;
+            try
+            {
+                priceNormalized = Convert.ToInt32(node.SelectSingleNode(".//input[contains(@id, 'PriceInCents')]").Attributes["value"].Value);
+            } catch
+            {
+                priceNormalized = 0;
+            }
+
             string discount = this.getDiscount(node);
             string url = this.getURL(node);
-            
-            return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url); ;
+
+            return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url); ;
+        }
+
+        private string parseToBrand(string title)
+        {
+            List<string> brands = new List<string>{
+                "Grolsch",
+                "Heineken",
+                "Amstel",
+                "Bavaria",
+                "Jupiler",
+            };
+
+            foreach (string brand in brands)
+            {
+                if (title.ToLower().Contains(brand.ToLower()))
+                {
+                    return brand;
+                }
+            }
+
+            return "";
         }
 
         private string getURL(HtmlNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 return "";
             }
@@ -96,12 +206,12 @@ namespace SkereBiertjes
 
         private string getDiscount(HtmlNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 return "";
             }
             node = node.SelectSingleNode(".//div[contains(@class, 'jum-promotion')]");
-            if(node == null)
+            if (node == null)
             {
                 return "";
             }
@@ -114,9 +224,11 @@ namespace SkereBiertjes
         }
 
         //create a beer with jumbo allready in it;
-        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "Jumbo", url);
+            return new Beer(brand, title, volume, bottleAmount, priceNormalized, discount, "Jumbo", url);
         }
     }
 }
+
+

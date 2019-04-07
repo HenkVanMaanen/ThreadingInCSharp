@@ -15,6 +15,7 @@ namespace SkereBiertjes
     public class PLUSScraper : Scraper
     {
         public string StandardURL;
+        private string keyword = "bier";
         private List<Beer> beers;
 
         public PLUSScraper()
@@ -23,34 +24,39 @@ namespace SkereBiertjes
             beers = new List<Beer>();
         }
 
-        List<Beer> Scraper.parseHTML()
+        async Task<List<Beer>> Scraper.parseHTML()
         {
+            Debug.WriteLine("Starting PLUS");
             List<Beer> beers = new List<Beer>();
-            //get document
-            var doc = new HtmlDocument();
-            doc.OptionFixNestedTags = true;
-            doc.Load(StandardURL);
+            var pages = await getHTML();
 
-            var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'product-list-block')]");
-
-            if (nodes == null)
+            foreach (string page in pages)
             {
-                Debug.WriteLine("no nodes selected");
-                return null;
-            }
+                //get document
+                var doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(page);
 
-            foreach (var node in nodes)
-            {
-                if (node != null)
+                var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'product-list-block')]");
+
+                if (nodes == null)
                 {
-                    Beer beer = this.parseData(node);
+                    Debug.WriteLine("no nodes selected");
+                    return null;
+                }
 
-                    beers.Add(beer);
+                foreach (var node in nodes)
+                {
+                    if (node != null)
+                    {
+                        Beer beer = this.parseData(node);
 
-                    beer.printInfo();
+                        beers.Add(beer);
+
+                        beer.printInfo();
+                    }
                 }
             }
-
             return beers;
         }
 
@@ -59,26 +65,66 @@ namespace SkereBiertjes
             throw new NotImplementedException();
         }
 
-        async Task<List<string>> Scraper.getHTML()
+        async Task<List<string>> getHTML()
         {
-            throw new NotImplementedException();
+            var pages = new List<string>();
+
+            using (var httpClient = new HttpClient())
+            {
+
+                var response = await httpClient.GetAsync("https://www.plus.nl/INTERSHOP/web/WFS/PLUS-website-Site/nl_NL/-/EUR/ViewTWSearch-ProductPaging?PageNumber=1&PageSize=500&SortingAttribute=&tn_cid=333333-10000&tn_q=" + keyword +  "&tn_sort=Sorteeroptie%2520Zoeken&SelectedTabName=solrTabs1");
+                pages.Add(await response.Content.ReadAsStringAsync());
+
+                return pages;
+            }
         }
 
         private Beer parseData(HtmlNode node)
         {
             HtmlNode infoNode = node.SelectSingleNode(".//div[contains(@class, 'product-tile__info')]");
             
-            string brand = infoNode.Attributes["data-name"].Value;
-            int bottleAmount = this.parseToAmount(brand);
-            int priceNormalized = this.getPrice(infoNode);  
+            string title = infoNode.Attributes["data-name"].Value;
+            string brand = this.parseToBrand(title);
+            int bottleAmount = this.parseToAmount(title);
+
+            int priceNormalized;
+            try
+            {
+                priceNormalized = this.getPrice(infoNode);
+            } catch
+            {
+                priceNormalized = 0;
+            }
+
             string data = node.SelectSingleNode(".//span[contains(@class, 'product-tile__quantity')]").InnerHtml;
             int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
             int volume = totalVolume / bottleAmount;
-            string discount = "";
+            string discount = this.getDiscount(infoNode);
             string url = "https://plus.nl" + node.SelectSingleNode(".//img[contains(@class, 'lazy')]").Attributes["data-src"].Value.Replace("&#47;", "/");
-            return CreateBeer(brand, volume, bottleAmount, priceNormalized, discount, url);
+            return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }
+        
+        private string parseToBrand(string title)
+        {
+            List<string> brands = new List<string>{
+                "Grolsch",
+                "Heineken",
+                "Amstel",
+                "Bavaria",
+                "Jupiler",
+            };
 
+            foreach (string brand in brands)
+            {
+                if (title.ToLower().Contains(brand.ToLower()))
+                {
+                    return brand;
+                }
+            }
+
+            return "";
+        }
+        
         private int getPrice(HtmlNode node)
         {
             if(node == null)
@@ -87,12 +133,23 @@ namespace SkereBiertjes
             }
 
             HtmlNode HtmlDiscountPriceNode = node.SelectSingleNode(".//div[contains(@class, 'text-clover')]");
-            if(HtmlDiscountPriceNode != null)
+
+            return Convert.ToInt32(Math.Round(Convert.ToDouble(node.Attributes["data-price"].Value)));
+        }
+
+        private string getDiscount(HtmlNode node)
+        {
+            if (node == null)
             {
-                return Convert.ToInt32(HtmlDiscountPriceNode.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", ""));
+                return "";
             }
 
-            return Convert.ToInt32(Math.Round(Convert.ToDouble(node.Attributes["data-price"].Value) * 100));
+            HtmlNode HtmlDiscountPriceNode = node.SelectSingleNode(".//div[contains(@class, 'text-clover')]");
+            if (HtmlDiscountPriceNode != null)
+            {
+                return HtmlDiscountPriceNode.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+            }
+            return "";
         }
 
         private int parseToAmount(string title)
@@ -119,9 +176,9 @@ namespace SkereBiertjes
             return 1;
         }
         //create a beer with jumbo allready in it;
-        private Beer CreateBeer(string brand, int volume, int bottleAmount, int priceNormalized, string discount, string url)
+        private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {
-            return new Beer(brand, volume, bottleAmount, priceNormalized, discount, "PLUS", url);
+            return new Beer(brand, title, volume, bottleAmount, priceNormalized, discount, "Plus", url);
         }
     }
 }
