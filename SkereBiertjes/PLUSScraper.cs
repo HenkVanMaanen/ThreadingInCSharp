@@ -44,6 +44,7 @@ namespace SkereBiertjes
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            // Wait for getting data
             var pages = await getHTML();
 
             stopWatch.Stop();
@@ -54,6 +55,8 @@ namespace SkereBiertjes
             }
 
             stopWatch.Reset();
+
+            // Loop over all received pages
             foreach (string page in pages)
             {
                 //get document
@@ -100,6 +103,7 @@ namespace SkereBiertjes
         {
             var pages = new List<string>();
 
+            // Loop over all result pages to get HTML
             using (var httpClient = new HttpClient())
             {
 

@@ -66,10 +66,13 @@ namespace SkereBiertjes
                 var workToDo = new WaitCallback(async o =>
                 {
                     List<Beer> beersDB = new List<Beer>();
+
+                    // Wait for parseHTML to finish and put parsed data in database
                     beersDB = await scraper.parseHTML();
                     this.beersCount += beersDB.Count;
                     this.databaseHandler.store(beersDB);
 
+                    // Mutex used to prevent data race
                     mut.WaitOne();
                     scraperFinishedCount++;
                     mut.ReleaseMutex();

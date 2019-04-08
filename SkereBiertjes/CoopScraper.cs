@@ -40,6 +40,7 @@ namespace SkereBiertjes
         {
             var pages = new List<string>();
 
+            // Loop over all result pages to get HTML
             using (var httpClient = new HttpClient())
             {
 
@@ -58,6 +59,7 @@ namespace SkereBiertjes
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            //getting the html
             var pages = await getHTML();
 
             stopWatch.Stop();
@@ -68,6 +70,8 @@ namespace SkereBiertjes
             }
             
             stopWatch.Restart();
+
+            // Loop over all received pages
             foreach (string page in pages)
             {
                 var doc = new HtmlDocument();

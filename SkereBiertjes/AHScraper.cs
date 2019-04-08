@@ -42,8 +42,8 @@ namespace SkereBiertjes
 
             using (var httpClient = new HttpClient())
             {
-                
 
+                // Loop over all result pages to get HTML
                 for (var p = 0; p < 17; p++)
                 {
                     var response = await httpClient.GetAsync("https://www.ah.nl/zoeken/api/products/search?query=" + keyword + "&page=" + p);
@@ -73,6 +73,7 @@ namespace SkereBiertjes
             }
 
             stopWatch.Restart();
+
             //loop over all pages and parse each page
             foreach (string page in pages)
             {

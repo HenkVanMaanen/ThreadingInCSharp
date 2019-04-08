@@ -42,7 +42,7 @@ namespace SkereBiertjes
             using (var httpClient = new HttpClient())
             {
 
-
+                // Loop over all result pages to get HTML
                 for (var p = 0; p < 4; p++)
                 {
                     var response = await httpClient.GetAsync("https://www.jumbo.com/producten?PageNumber=" + p + "&SearchTerm=" + keyword);
@@ -63,6 +63,7 @@ namespace SkereBiertjes
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            //getting the html
             var pages = await getHTML();
 
             stopWatch.Stop();
@@ -73,6 +74,8 @@ namespace SkereBiertjes
             }
 
             stopWatch.Restart();
+
+            // Loop over all received pages
             foreach (string page in pages)
             {
                 //get document
