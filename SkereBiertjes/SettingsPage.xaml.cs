@@ -24,6 +24,8 @@ namespace SkereBiertjes
         public SettingsPage()
         {
             this.InitializeComponent();
+
+            // Set the multithreading Toggle button to the correct value from local settings
             var multithreadingEnabled = localSettings.Values["multithreading_enabled"];
 
             if (multithreadingEnabled == null)
@@ -37,7 +39,9 @@ namespace SkereBiertjes
             }
         }
 
-        // Benchmark start button clicked
+        /**
+         * Start the benchmark (on UI button click)
+         */
         private async void BenchmarkStart_Click(object sender, RoutedEventArgs e)
         {
             cancellationTokenSource.Cancel();
@@ -137,7 +141,9 @@ namespace SkereBiertjes
             }
         }
 
-        // Multithreading toggled
+        /**
+         * Toggle multithreading (on UI button click)
+         */
         private void Multithreading_Toggled(object sender, RoutedEventArgs e)
         {
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;

@@ -19,7 +19,6 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <ComboBox x:Name="ShopComboBox" SelectionChanged="ShopComboBox_SelectionChanged" Grid.Row="0" Header="Winkel" PlaceholderText="Selecteer een winkel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <x:String>Geen winkel</x:String>
@@ -45,9 +44,6 @@
                 <x:String>Losse flesje</x:String>
             </ComboBox>
             <Border Grid.Row="5" Margin="0,12,0,0" BorderThickness="1" BorderBrush="#EAEAEA" VerticalAlignment="Bottom"/>
-            <Button Grid.Row="6" Margin="0,25,0,0" Click="SaveButton_Click"
-                Background="#F3AD0C" Foreground="White" Content="Toepassen"
-                Height="40" Width="165" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
         </Grid>
     </Grid>
 </Page>

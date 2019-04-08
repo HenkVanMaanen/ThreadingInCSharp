@@ -65,17 +65,12 @@ namespace SkereBiertjes
             }
         }
 
-        // Fired when the Save button is clicked (Bottom of the page)
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        // Fired when the Shop selection changes
+        /**
+         * Change the prefered shop (on UI combobox selection changed)
+         */
         private void ShopComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // e.AddedItems[0].ToString(); <-- Get the current selection
-            string shop = e.AddedItems[0].ToString();
+            string shop = e.AddedItems[0].ToString(); // Get the current selection
             if (shop.ToLower().Contains("geen winkel"))
             {
                 this.filter.setShop("");
@@ -86,10 +81,13 @@ namespace SkereBiertjes
             }
         }
 
-        // Fired when the Brand selection changes
+        /**
+         * Change the prefered brand (on UI combobox selection changed)
+         */
         private void BrandComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string brand = e.AddedItems[0].ToString();
+            string brand = e.AddedItems[0].ToString(); // Get the current selection
+
             if (brand.ToLower().Contains("geen merk"))
             {
                 this.filter.setBrand("");
@@ -100,11 +98,13 @@ namespace SkereBiertjes
             }
         }
 
-        // Fired when the Type selection changes
+        /**
+         * Change the prefered volume of beer (on UI combobox selection changed)
+         */
         private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {            
-            // e.AddedItems[0].ToString(); <-- Get the current selection
-            string type = e.AddedItems[0].ToString();
+            string type = e.AddedItems[0].ToString(); // Get the current selection
+
             if (type.ToLower().Contains("geen type"))
             {
                 this.filter.setType("");
