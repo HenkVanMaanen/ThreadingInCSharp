@@ -23,17 +23,19 @@ namespace SkereBiertjes
         {
             beers = new List<Beer>();
         }
-
+        
+        //set benchmark if benchmark is running
         public void setBenchmark(bool benchmark)
         {
             this.benchmark = benchmark;
         }
 
+        //set benchmark data
         public void setBenchmarkData(List<string> data)
         {
             this.benchmarkData = data;
         }
-
+        
         async Task<List<string>> getHTML()
         {
             var pages = new List<string>();
@@ -60,6 +62,7 @@ namespace SkereBiertjes
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            //getting the html from the AH
             var pages = await getHTML();
 
             stopWatch.Stop();
@@ -70,8 +73,10 @@ namespace SkereBiertjes
             }
 
             stopWatch.Restart();
+            //loop over all pages and parse each page
             foreach (string page in pages)
             {
+                //set current page into a HTMLDocument
                 var doc = new HtmlDocument();
                 doc.OptionFixNestedTags = true;
                 doc.LoadHtml(page);
@@ -79,12 +84,14 @@ namespace SkereBiertjes
                 JToken jsonProducts = null;
                 try
                 {
+                    //clean the text so it can be parsed to JSON
                     string text = doc.DocumentNode.InnerHtml;
                     JObject json;
                     if (text[0].Equals("\"") && text[text.Length].Equals("\""))
                     {
                         text = text.Remove(text.Length , 1).Remove(0, 1);
                     }
+                    //add extra backslashes to Quotes otherwise Json cant be parsed
                     text = text.Replace("href=\"", "href=\\\"");
                     text = text.Replace("\">", "\\\">");
                     json = JObject.Parse(text);
@@ -92,16 +99,19 @@ namespace SkereBiertjes
                     jsonProducts = json.SelectToken("products");
                 } catch
                 {
+                    //skip this page if the page has invalid data on it.
                     break;
                 }
 
+                //loop over every product
                 foreach (JToken product in jsonProducts)
                 {
+                    //parse product into a beer opject
                     Beer beer = this.parseData(product);
-
+                    
                     beers.Add(beer);
 
-                    //print info from beer
+                    //print info from beer if it is enabled in the scraper
                     beer.printInfo();
                 }
             }
@@ -123,6 +133,7 @@ namespace SkereBiertjes
         //parse the article node to a beer
         private Beer parseData(JToken json)
         {
+            //parse json to usable data
             string title = json["title"].ToString();
             string brand = this.parseToBrand(title);
             int volume = this.parseNameToVolume(json["unitSize"].ToString());
@@ -130,13 +141,14 @@ namespace SkereBiertjes
             string discount = "";
             int bottleAmount = this.parseNameToBottle(json["unitSize"].ToString());
 
-            string url = getURL(json);            
+            string url = getURL(json);
 
             return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }
 
         private string getURL(JToken json)
         {
+            //if the images exists return image, otherwise return empty string
             try
             {
                 if (json["images"].Count() == 0)
@@ -155,6 +167,7 @@ namespace SkereBiertjes
 
         private string parseToBrand(string title)
         {
+            //parse title to a brand, this function will check if one of the listed brands is in the title.
             List<string> brands = new List<string>{
                 "Grolsch",
                 "Heineken",
@@ -176,9 +189,10 @@ namespace SkereBiertjes
 
         private int parseNameToBottle(string text)
         {
+            //parse title to bottle amount, the name will always contain the amount of bottles, if its not there it will always be 1
             if (text == "")
             {
-                return 0;
+                return 1;
             }
 
             string[] words = text.Split(' ');
@@ -216,6 +230,7 @@ namespace SkereBiertjes
             
             return 1;
         }
+
         //create a beer with AlbertHeijn allready in it;
         private Beer CreateBeer(string brand, string title, int volume, int bottleAmount, int priceNormalized, string discount, string url)
         {

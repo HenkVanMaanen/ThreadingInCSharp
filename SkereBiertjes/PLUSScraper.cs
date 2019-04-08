@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace SkereBiertjes
 {
+    //because all scrapers are basically the same, all scraper comments can be found in the AHScraper.
+    //if there is data specific for this scraper only it will contain comments
     public class PLUSScraper : Scraper
     {
         private string keyword = "bier";
@@ -91,7 +93,7 @@ namespace SkereBiertjes
 
         List<Beer> Scraper.getBeers()
         {
-            throw new NotImplementedException();
+            return beers;
         }
 
         async Task<List<string>> getHTML()
@@ -107,7 +109,7 @@ namespace SkereBiertjes
                 return pages;
             }
         }
-
+        
         private Beer parseData(HtmlNode node)
         {
             HtmlNode infoNode = node.SelectSingleNode(".//div[contains(@class, 'product-tile__info')]");
@@ -129,6 +131,8 @@ namespace SkereBiertjes
             int totalVolume = Convert.ToInt32(Regex.Match(data, @"\d+").Value);
             int volume = totalVolume / bottleAmount;
             string discount = this.getDiscount(infoNode);
+            
+            //url is a relative path, so it still needs the correct domain
             string url = "https://plus.nl" + node.SelectSingleNode(".//img[contains(@class, 'lazy')]").Attributes["data-src"].Value.Replace("&#47;", "/");
             return CreateBeer(brand, title, volume, bottleAmount, priceNormalized, discount, url);
         }

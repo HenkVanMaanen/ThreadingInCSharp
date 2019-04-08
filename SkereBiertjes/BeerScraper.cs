@@ -24,6 +24,7 @@ namespace SkereBiertjes
             this.databaseHandler = databaseHandler;
             this.beersCount = 0;
             this.doneSearching = false;
+
             //set all scrapers
             this.scrapers = new List<Scraper>
             {
@@ -36,11 +37,13 @@ namespace SkereBiertjes
 
         }
 
+        //set list where data can be push on for benchmark 
         public void setBenchmarkData(List<string> data)
         {
             this.benchmarkData = data;
         }
 
+        //start scraping the internet 
         public async void startFindingFirstBeers(bool benchmark)
         {
             this.doneSearching = false;
@@ -48,6 +51,7 @@ namespace SkereBiertjes
             var scraperFinishedCount = 0;
             Mutex mut = new Mutex();
 
+            //loops over every scraper and will start parseing every scraper
             foreach (Scraper scraper in this.scrapers)
             {
                 if (benchmark)
@@ -100,6 +104,7 @@ namespace SkereBiertjes
 
         public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker
         {
+            //wait untill the startFindingFirstBeers is done
             while (!this.doneSearching)
             {
                 Task.Delay(100);
@@ -107,13 +112,16 @@ namespace SkereBiertjes
 
             List<Beer> beers = new List<Beer>();
 
+            //get data from database
             beers = this.databaseHandler.get();
             
+            //insert typefilter in a list so we can compare numbers instead of text.
             IDictionary<string, Object> typeFilter = new Dictionary<string, Object>();
             typeFilter["kratjes"] = 24;
             typeFilter["sixpack"] = 6;
             typeFilter["losse flesje"] = 1;
-            
+
+            //if multithread is on us PLINQ else use LINQ
             if (localSettings.Values["multithreading_enabled"].ToString() == "True")
             {
                 beers =    beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
@@ -133,13 +141,9 @@ namespace SkereBiertjes
             return beers;
             
         }
-
-        public int timeToScrape()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 
+    //filter class, this class will be used for filtering current dataset
     public class Filter
     {
         private string brand;

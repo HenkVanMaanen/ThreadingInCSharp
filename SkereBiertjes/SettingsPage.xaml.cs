@@ -42,6 +42,7 @@ namespace SkereBiertjes
         {
             cancellationTokenSource.Cancel();
 
+            //set this data list into all scrapers and beerscraper, this way we can call this data object.
             List<string> data = new List<string>();
             this.beerScraper.setBenchmarkData(data);
 
@@ -54,18 +55,26 @@ namespace SkereBiertjes
 
             cancellationTokenSource.Dispose();
             cancellationTokenSource = new CancellationTokenSource();
-
+            
+            //benchmark data
             int totalGetting = 0;
             int totalParsing = 0;
             int totalGettingDone = 0;
             int totalParsingDone = 0;
+            
             bool multithread = (bool) localSettings.Values["multithreading_enabled"];
+            //infinite loop
+            //not best pratice needs to change in the future
             while (true)
             {
+                //if data contains new benchmark data print it out
                 if (data.Count > 0)
                 {
+                    //loop over all new benchmark data
                     foreach (string txt in data.ToList())
                     {
+                        //if current text contains getting it will get the time and add it to totalgetting or it will replace totalgetting based on multithread on or off.
+                        //this should give a slight insight in the difference off multithreading or not.
                         await UpdateBenchMarkGrid(txt, cancellationTokenSource.Token);
                         if (txt.Contains("Getting") && !txt.Contains("Total"))
                         {
@@ -79,12 +88,15 @@ namespace SkereBiertjes
                                 totalGetting += Convert.ToInt32(txt.Split(" ")[4]);
                             }
 
+                            //if all scrapers are done getting the html it will send the string to the benchmark page
                             if (totalGettingDone == this.beerScraper.getScrapers().Count)
                             {
                                 data.Add("[Getting Total] " + totalGetting + "ms");
                             }
 
                         }
+                        //if current text contains parsing it will get the time and add it to totalparsing or it will replace totalparsing based on multithread on or off.
+                        //this should give a slight insight in the difference off multithreading or not.
                         else if (txt.Contains("parsing") && !txt.Contains("Total")) 
                         {
                             totalParsingDone++;
@@ -97,18 +109,25 @@ namespace SkereBiertjes
                                 totalParsing += Convert.ToInt32(txt.Split(" ")[4]);
                             }
 
+                            //if all scrapers are done parsing the html it will send the string to the benchmark page
                             if (totalGettingDone == this.beerScraper.getScrapers().Count)
                             {
                                 data.Add("[Parsing Total] " + totalParsing + "ms");
                             }
                         }
+                        //remove current data;
                         data.Remove(txt);
                     }
                 }
+                //wait for 100 ms
                 await Task.Delay(100);
             }
         }
-
+        
+        /**
+         * This async method creates a row in the Grid for
+         * particular benchmark item. It needs to be executed immediately.
+         */
         private async Task UpdateBenchMarkGrid(string row, CancellationToken cancellationToken)
         {
             // UI THREAD STUFF

@@ -67,7 +67,8 @@ namespace SkereBiertjes
         {
             return this.url;
         }
-
+        
+        //print info of a beer
         public void printInfo()
         {
             bool debug = false;

@@ -25,6 +25,7 @@ namespace SkereBiertjes
 
         private void setFilterState()
         {
+            //set all filters to the state it was in.
             if (this.filter == null)
             {
                 return;
@@ -116,6 +117,7 @@ namespace SkereBiertjes
         
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            //use only one filter object for all pages, this will make sure the filter will always be the same
             if (e.Parameter is Filter)
             {
                 this.filter = (Filter) e.Parameter;

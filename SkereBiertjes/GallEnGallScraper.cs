@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace SkereBiertjes
 {
+    //because all scrapers are basically the same, all scraper comments can be found in the AHScraper.
+    //if there is data specific for this scraper only it will contain comments
     public class GallEnGallScraper : Scraper
     {
         public string StandardURL;
@@ -246,6 +248,7 @@ namespace SkereBiertjes
             return 300;
         }
 
+        //parse a string to json, removing and replacing stuff that is wrong
         private JObject parseToJson(string text)
         {
             if(text.IndexOf("data-tracking-click=") > 0)

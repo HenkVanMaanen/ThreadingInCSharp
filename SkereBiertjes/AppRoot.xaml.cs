@@ -77,7 +77,8 @@ namespace SkereBiertjes
                 ContentFrame.Navigate(typeof(SettingsPage), this.beerScraper);
             }
             
-            // Else some other menu item was clicked
+            // Else some other menu item was clicked,
+            // send necessary data with each page
             else
             {
                 NavigationViewItem item = args.SelectedItem as NavigationViewItem;

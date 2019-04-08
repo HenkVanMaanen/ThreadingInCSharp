@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace SkereBiertjes
 {
+    //because all scrapers are basically the same, all scraper comments can be found in the AHScraper.
+    //if there is data specific for this scraper only it will contain comments
     public class JumboScraper : Scraper
     {
         private string keyword = "bier";
@@ -78,6 +80,7 @@ namespace SkereBiertjes
                 doc.OptionFixNestedTags = true;
                 doc.LoadHtml(page);
 
+                //get all div with the class name jum-item-product
                 var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'jum-item-product')]");
 
                 if (nodes == null)
@@ -86,6 +89,7 @@ namespace SkereBiertjes
                     break;
                 }
 
+                //loop over all nodes
                 foreach (var node in nodes)
                 {
                     if (node != null)
@@ -115,12 +119,14 @@ namespace SkereBiertjes
 
         private Beer parseData(HtmlNode node)
         {
+            //select title tag
             string title = node.SelectSingleNode(".//a[contains(@data-jum-action, 'quickView')]").InnerHtml;
             string brand = this.parseToBrand(title);
 
             int volume;
             try
             {
+                //select size tag
                 HtmlNode node2 = node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]");
                 if (node2 == null)
                 {
@@ -157,6 +163,7 @@ namespace SkereBiertjes
             int bottleAmount;
             try
             {
+                //get node that contains bottleamount
                 HtmlNode node2 = node.SelectSingleNode(".//span[contains(@class, 'jum-pack-size')]");
                 if(node2 == null)
                 {
@@ -164,6 +171,7 @@ namespace SkereBiertjes
                 } else
                 {
                     string text = node2.InnerHtml;
+                    //cl and liters will contain a bottle amount, ml will not
                     if ((text.ToLower().Contains("cl") || text.ToLower().Contains("l")) && !text.ToLower().Contains("ml"))
                     {
                         bottleAmount = Convert.ToInt32(text.Split(' ')[0]);

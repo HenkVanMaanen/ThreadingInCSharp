@@ -149,6 +149,7 @@ namespace SkereBiertjes
                     sCommand.Append(";");
 
                     //open the db connection and run the query containing all information
+                    //one query will contain all insert data, this is the fastes way to do it.
                     db.Open();
                     SqliteCommand insertSql = new SqliteCommand(sCommand.ToString(), db);
                     insertSql.ExecuteReader();

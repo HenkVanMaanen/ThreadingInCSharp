@@ -12,6 +12,8 @@ using System.Diagnostics;
 
 namespace SkereBiertjes
 {
+    //because all scrapers are basically the same, all scraper comments can be found in the AHScraper.
+    //if there is data specific for this scraper only it will contain comments
     public class CoopScraper : Scraper
     {
         private string keyword = "bier";
@@ -28,7 +30,7 @@ namespace SkereBiertjes
         {
             this.benchmark = benchmark;
         }
-
+        
         public void setBenchmarkData(List<string> data)
         {
             this.benchmarkData = data;
@@ -117,6 +119,7 @@ namespace SkereBiertjes
 
         private int getPrice(JToken json)
         {
+            //because coop uses different formats for pricing this if is necessary to format all prices correct
             int number;
             string text = json["productJson"]["price"].ToString();
             if (text.Contains("."))
@@ -168,6 +171,7 @@ namespace SkereBiertjes
         
         private int parseNameToBottle(string text)
         {
+            //if the name has a x in it, it is usually for bottleamount and bottle volume (24x30)
             if (text == "")
             {
                 return 0;
