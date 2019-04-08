@@ -129,7 +129,7 @@ namespace SkereBiertjes
                                 .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
                                 .Where(beer => keyword == "" || beer.getTitle().ToLower().Contains(keyword.ToLower()))
                                 .OrderBy(beer => beer.getNormalizedPrice()).AsParallel().ToList();
-            } else //Haalt alle bieren op waar het filter of de zoekterm hetzelfde is als de ingevulde waarde door middel van LINQ.
+            } else 
             {
                 beers = beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
                                 .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
