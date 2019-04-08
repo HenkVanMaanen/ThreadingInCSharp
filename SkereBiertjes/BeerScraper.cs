@@ -98,9 +98,9 @@ namespace SkereBiertjes
             return scrapers;
         }
 
-        public List<Beer> search(string keyword, Filter filter) //Filters zijn merk, type, winkel, keyword; Filter is specifieker
+        public List<Beer> search(string keyword, Filter filter)
         {
-            while (!this.doneSearching)
+            while (!this.doneSearching) //Zorgt voor een delay als het programma nog niet klaar is met zoeken
             {
                 Task.Delay(100);
             }
@@ -109,19 +109,20 @@ namespace SkereBiertjes
 
             beers = this.databaseHandler.get();
             
+            //Het soort filter voor het type wordt geinitialiseerd
             IDictionary<string, Object> typeFilter = new Dictionary<string, Object>();
             typeFilter["kratjes"] = 24;
             typeFilter["sixpack"] = 6;
             typeFilter["losse flesje"] = 1;
             
-            if (localSettings.Values["multithreading_enabled"].ToString() == "True")
+            if (localSettings.Values["multithreading_enabled"].ToString() == "True") // Haalt de alle bieren op waar het filter of de zoekterm hetzelfde is als de ingevoerde waarde door middel van PLINQ.
             {
                 beers =    beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
                                 .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
                                 .Where(beer => filter.getType() == "" || beer.getBottleAmount().Equals(typeFilter[filter.getType().ToLower()]))
                                 .Where(beer => keyword == "" || beer.getTitle().ToLower().Contains(keyword.ToLower()))
                                 .OrderBy(beer => beer.getNormalizedPrice()).AsParallel().ToList();
-            } else
+            } else //Haalt alle bieren op waar het filter of de zoekterm hetzelfde is als de ingevulde waarde door middel van LINQ.
             {
                 beers = beers.Where(beer => filter.getBrand() == "" || beer.getBrand().ToLower().Contains(filter.getBrand().ToLower()))
                                 .Where(beer => filter.getShop() == "" || beer.getShopName().ToLower().Contains(filter.getShop().ToLower()))
@@ -140,7 +141,7 @@ namespace SkereBiertjes
         }
     }
 
-    public class Filter
+    public class Filter 
     {
         private string brand;
         private string shop;
